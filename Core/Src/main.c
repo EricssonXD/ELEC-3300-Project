@@ -99,6 +99,9 @@ int main(void)
 
   wifiInit(SERVER);
   LCD_DrawString(0, 0, "Wifi Initialized");
+
+//  getIP();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
