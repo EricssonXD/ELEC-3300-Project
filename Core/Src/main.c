@@ -94,12 +94,14 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+//  USART3_IRQHandler();
   LCD_INIT();
   LCD_DrawString(0, 0, "Initalizing Wifi");
 
   wifiInit(SERVER);
   LCD_DrawString(0, 0, "Wifi Initialized");
-
+  int number = 0;
+  char numberString[4];
 //  getIP();
 
   /* USER CODE END 2 */
@@ -108,6 +110,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_Delay(1000);
+	  sprintf(numberString, "%d", number);
+	  LCD_DrawChar(0, 80, *numberString);
+	  number++;
+	  if(number==10)number=0;
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
