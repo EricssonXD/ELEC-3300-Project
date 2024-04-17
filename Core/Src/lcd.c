@@ -1,5 +1,6 @@
 #include "lcd.h"
 #include "ascii.h"	
+#include "pacman.h"
 
 void		LCD_REG_Config          ( void );
 void		LCD_FillColor           ( uint32_t ulAmout_Point, uint16_t usColor );
@@ -446,44 +447,251 @@ void LCD_DrawDot(uint16_t usCOLUMN, uint16_t usPAGE, uint16_t usColor)
 
 }
 
-//Task 3
 void LCD_DrawEllipse ( uint16_t usC, uint16_t usP, uint16_t SR, uint16_t LR, uint16_t usColor)
 {
 	/*
 	 *  Task 3 : Implement LCD_DrawEllipse by using LCD_DrawDot
 	 */
-	int foundFirst = 0;
-	int currX = -1;
-	int currY = -1;
+	int rx = LR;
+	int ry = SR;
+	int xc = usC;
+	int yc = usP;
 
-	// Equation of ellipse =  [(x - usC)^2/ LR^2 + (usP - k)^2 / SR^2]  = 1
-	for(int x = usC - LR; x < usC + 1; x++){
-		for (int y = usP - SR; y < usP + 1; y++){
-			int temp = (x - usC)*(x - usC)*(SR*SR) + (y - usP)*(y - usP)*(LR*LR);
-			if( temp == LR*LR*SR*SR){
-				if(!foundFirst){
-					foundFirst = 1;
-					currX = x;
-					currY = y;
-					continue;
-				}
-				// Top left
-//				LCD_DrawDot(x,y,usColor);
-//				continue;
-				LCD_DrawLine(x, y, currX, currY, usColor);
-				// Top right
-				LCD_DrawLine(usC*2-x,y, usC*2-currX, currY, usColor);
-				// Bottom Left
-				LCD_DrawLine(x, usP*2-y, currX, usP*2-currY, usColor);
-				// Bottom Right
-				LCD_DrawLine(usC*2-x, usP*2-y, usC*2-currX, usP*2-currY, usColor);
+	float dx, dy, d1, d2, x, y;
+	x = 0;
+	y = ry;
 
-				currX = x;
-				currY = y;
+	// Initial decision parameter of region 1: p10=ry^2+0.25*rx^2-rx^2*ry
+	d1 = (ry * ry) + (0.25 * rx * rx) - (rx * rx * ry);
+	dx = 2 * ry * ry * x;
+	dy = 2 * rx * rx * y;
 
-			}
+	// For region 1
+	while (dx < dy)
+	{
+		LCD_DrawDot(x + xc, y + yc, usColor);
+		LCD_DrawDot(-x + xc, y + yc, usColor);
+		LCD_DrawDot(x + xc, -y + yc, usColor);
+		LCD_DrawDot(-x + xc, -y + yc, usColor);
+
+		if (d1 < 0)
+		{
+			x++;
+			dx = dx + (2 * ry * ry);
+			d1 = d1 + dx + (ry * ry);
+		}
+		else
+		{
+			x++;
+			y--;
+			dx = dx + (2 * ry * ry);
+			dy = dy - (2 * rx * rx);
+			d1 = d1 + dx - dy + (ry * ry);
 		}
 	}
 
+	// Decision parameter of region 2: p20=ry2(x0+1/2)2+rx2 (y0-1)2-rx2ry2
+	d2 = ((ry * ry) * ((x + 0.5) * (x + 0.5))) + ((rx * rx) * ((y - 1) * (y - 1))) - (rx * rx * ry * ry);
+
+	// Plotting points of region 2
+	while (y >= 0)
+	{
+		LCD_DrawDot(x + xc, y + yc, usColor);
+		LCD_DrawDot(-x + xc, y + yc, usColor);
+		LCD_DrawDot(x + xc, -y + yc, usColor);
+		LCD_DrawDot(-x + xc, -y + yc, usColor);
+
+		if (d2 > 0)
+		{
+			y--;
+			dy = dy - (2 * rx * rx);
+			d2 = d2 + (rx * rx) - dy;
+		}
+		else
+		{
+			y--;
+			x++;
+			dx = dx + (2 * ry * ry);
+			dy = dy - (2 * rx * rx);
+			d2 = d2 + dx - dy + (rx * rx);
+		}
+	}
+}
+
+void LCD_DrawChar_Color ( uint16_t usC, uint16_t usP, const char cChar, uint16_t usColor_Background, uint16_t usColor_Foreground )
+{
+	uint8_t ucTemp, ucRelativePositon, ucPage, ucColumn;
+
+	ucRelativePositon = cChar - ' ';
+
+	LCD_OpenWindow ( usC, usP, WIDTH_EN_CHAR, HEIGHT_EN_CHAR );
+
+	LCD_Write_Cmd ( CMD_SetPixel );
+
+	for ( ucPage = 0; ucPage < HEIGHT_EN_CHAR; ucPage ++ )
+	{
+		ucTemp = ucAscii_1608 [ ucRelativePositon ] [ ucPage ];
+
+		for ( ucColumn = 0; ucColumn < WIDTH_EN_CHAR; ucColumn ++ )
+		{
+			if ( ucTemp & 0x01 )
+				LCD_Write_Data ( usColor_Foreground );
+
+			else
+				LCD_Write_Data ( usColor_Background );
+
+			ucTemp >>= 1;
+
+		}
+
+	}
+
+}
+
+void LCD_DrawString_Color ( uint16_t usC, uint16_t usP, const char * pStr, uint16_t usColor_Background, uint16_t usColor_Foreground )
+{
+	while ( * pStr != '\0' )
+	{
+		if ( ( usC - LCD_DispWindow_Start_COLUMN + WIDTH_EN_CHAR ) > LCD_DispWindow_COLUMN )
+		{
+			usC = LCD_DispWindow_Start_COLUMN;
+			usP += HEIGHT_EN_CHAR;
+		}
+
+		if ( ( usP - LCD_DispWindow_Start_PAGE + HEIGHT_EN_CHAR ) > LCD_DispWindow_PAGE )
+		{
+			usC = LCD_DispWindow_Start_COLUMN;
+			usP = LCD_DispWindow_Start_PAGE;
+		}
+
+		LCD_DrawChar_Color  ( usC, usP, * pStr, usColor_Background, usColor_Foreground );
+
+		pStr ++;
+
+		usC += WIDTH_EN_CHAR;
+
+	}
+
+}
+
+
+void LCD_DrawPixel(uint16_t startX, uint16_t startY, uint16_t size, uint16_t color)
+{
+    uint16_t x, y;
+
+    for (y = startY; y < startY + size; y++) {
+        for (x = startX; x < startX + size; x++) {
+            LCD_DrawDot(x, y, color);
+        }
+    }
+}
+
+void LCD_DrawCircle(uint16_t center_x, uint16_t center_y, uint16_t radius, uint16_t color)
+{
+    int x, y;
+    int radius_squared = radius * radius;
+
+    for (y = -radius; y <= radius; y++) {
+        for (x = -radius; x <= radius; x++) {
+            if ((x * x + y * y) <= radius_squared) {
+                LCD_DrawDot(center_x + x, center_y + y, color);
+            }
+        }
+    }
+}
+
+void LCD_DrawPacman(Pacman* pacman, uint16_t startX, uint16_t startY, uint16_t size, uint16_t color)
+{
+    // Calculate the center coordinates of Pacman
+    uint16_t center_x = startX + size / 2;
+    uint16_t center_y = startY + size / 2;
+    uint16_t radius = size / 2;
+    uint16_t direction = pacman->direction;
+
+    int r;
+    int mouth_angle = 60;  // Adjust the angle as needed
+
+    for (r = 0; r <= radius; r++) {
+        int x, y;
+        int radius_squared = r * r;
+
+        for (y = -r; y <= r; y++) {
+            for (x = -r; x <= r; x++) {
+                if (x * x + y * y <= radius_squared) {
+                    // Calculate the angle of the current pixel
+                    double angle = atan2(y, x) * 180 / M_PI;
+
+                    // Check if the pixel is within the Pacman's mouth angle
+                    if(direction == LEFT && (angle <= (-180 + mouth_angle/2) || angle >= (180 - mouth_angle/2))){
+                    	continue;
+                    }
+                    else if(direction == RIGHT && (angle >= (0 - mouth_angle/2) && angle <= (0 + mouth_angle/2))){
+                    	continue;
+                    }
+                    else if(direction == UP && (angle >= (-90 - mouth_angle/2) && angle <= (-90 + mouth_angle/2))){
+						continue;
+					}
+                    else if(direction == DOWN && (angle >= (90 - mouth_angle/2) && angle <= (90 + mouth_angle/2))){
+						continue;
+					}
+                    else{
+                    	LCD_DrawDot(center_x + x, center_y + y, color);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void LCD_DrawFood(uint16_t startX, uint16_t startY, uint16_t foodSize, uint16_t pixelSize, uint16_t color){
+	uint16_t center_x = startX + pixelSize / 2;
+	uint16_t center_y = startY + pixelSize / 2;
+
+	uint16_t radius = foodSize / 2;
+
+	LCD_DrawCircle(center_x, center_y, radius, color);
+}
+
+void LCD_DrawBuff(uint16_t startX, uint16_t startY, uint16_t buffSize, uint16_t pixelSize, uint16_t color){
+	uint16_t center_x = startX + pixelSize / 2;
+	uint16_t center_y = startY + pixelSize / 2;
+
+	uint16_t radius = buffSize / 2;
+
+	LCD_DrawCircle(center_x, center_y, radius, color);
+}
+
+void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pacman)
+{
+    uint16_t x, y;
+    int mazeWidth = 23;
+    int mazeHeight = 26;
+    uint16_t foodSize = 3;
+    uint16_t buffSize = 6;
+    uint16_t wallColor = BLUE;
+    uint16_t initDirection = LEFT;
+    pacman->score = 0;
+
+
+    for (y = 0; y < mazeHeight; y++) {
+        for (x = 0; x < mazeWidth; x++) {
+            char mazeChar = mazeData[y][x];
+            if (mazeChar == '#') { // Wall
+                LCD_DrawPixel(startX + x * gamePixelSize, startY + y * gamePixelSize, gamePixelSize, wallColor);
+            } else if (mazeChar == 'P') { // Pacman
+                pacman->curX = x;
+                pacman->curY = y;
+                pacman->direction = LEFT;
+                LCD_DrawPacman(pacman, startX + x * gamePixelSize, startY + y * gamePixelSize, 9, YELLOW);
+                pacman->direction = STOP;
+            }
+            else if (mazeChar == '*'){
+            	LCD_DrawFood(startX + x * gamePixelSize, startY + y * gamePixelSize, foodSize, gamePixelSize, GREEN);
+            }
+            else if (mazeChar == '@'){
+				LCD_DrawBuff(startX + x * gamePixelSize, startY + y * gamePixelSize, buffSize, gamePixelSize, YELLOW);
+			}
+        }
+    }
 }
 
