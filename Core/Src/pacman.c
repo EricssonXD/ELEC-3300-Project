@@ -14,6 +14,12 @@
 
 PacmanGameData PACMAN_GAMEDATA;
 
+// Private functions
+void createMaze(const void * maze){
+	memcpy(PACMAN_GAMEDATA.mazeData, maze, sizeof (char) * 26 * 23);
+}
+
+// Public Functions
 void Pacman_gameloop(){
 	  if(PACMAN_GAMEDATA.prevDirection != RIGHT && PACMAN_GAMEDATA.prevDirection != LEFT){
 		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, LEFT);
@@ -43,12 +49,11 @@ void Pacman_gameloop(){
 }
 
 void Pacman_gamestart(){
-
-
-	memcpy(PACMAN_GAMEDATA.mazeData, MAZE1, sizeof (char) * 26 * 23);
+	createMaze(MAZE1);
 	LCD_Clear(0, 0, 240, 320, BLACK);
 	initMaze(mazeStartX, mazeStartY, PACMAN_GAMEDATA.mazeData, &PACMAN_GAMEDATA.pacman);
 }
+
 
 void Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction) {
 	//checking movement allowed or not?
