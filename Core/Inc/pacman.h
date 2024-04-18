@@ -45,5 +45,6 @@ typedef struct
 void Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction);
 void Pacman_gamestart();
 void Pacman_gameloop();
+void Pacman_handleInput(uint8_t input);
 
 #endif /* INC_PACMAN_H_ */

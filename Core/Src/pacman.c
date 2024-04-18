@@ -19,21 +19,41 @@ void createMaze(const void * maze){
 	memcpy(PACMAN_GAMEDATA.mazeData, maze, sizeof (char) * 26 * 23);
 }
 
+void Pacman_handleInput(uint8_t input){
+	switch (input) {
+	  case 0:
+		PACMAN_GAMEDATA.pacman.direction = UP;
+	    break;
+	  case 1:
+		PACMAN_GAMEDATA.pacman.direction = DOWN;
+	    break;
+	  case 2:
+		PACMAN_GAMEDATA.pacman.direction = LEFT;
+	    break;
+	  case 3:
+		PACMAN_GAMEDATA.pacman.direction = RIGHT;
+	    break;
+
+	  default:
+	    // code block
+	}
+
+}
 // Public Functions
 void Pacman_gameloop(){
-	  if(PACMAN_GAMEDATA.prevDirection != RIGHT && PACMAN_GAMEDATA.prevDirection != LEFT){
+	  if(PACMAN_GAMEDATA.prevDirection != RIGHT && PACMAN_GAMEDATA.pacman.direction == LEFT){
 		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, LEFT);
 		  PACMAN_GAMEDATA.prevDirection = LEFT;
 	  }
-	  else if(PACMAN_GAMEDATA.prevDirection != DOWN || PACMAN_GAMEDATA.pacman.direction == STOP){
+	  else if(PACMAN_GAMEDATA.prevDirection != DOWN && PACMAN_GAMEDATA.pacman.direction == UP){
 		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, UP);
 		  PACMAN_GAMEDATA.prevDirection = UP;
 	  }
-	  else if(PACMAN_GAMEDATA.prevDirection != LEFT || PACMAN_GAMEDATA.pacman.direction == STOP){
+	  else if(PACMAN_GAMEDATA.prevDirection != LEFT && PACMAN_GAMEDATA.pacman.direction == RIGHT){
 		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, RIGHT);
 		  PACMAN_GAMEDATA.prevDirection = RIGHT;
 	  }
-	  else if(PACMAN_GAMEDATA.prevDirection != UP || PACMAN_GAMEDATA.pacman.direction == STOP){
+	  else if(PACMAN_GAMEDATA.prevDirection != UP && PACMAN_GAMEDATA.pacman.direction == DOWN){
 		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, DOWN);
 		  PACMAN_GAMEDATA.prevDirection = DOWN;
 	  }

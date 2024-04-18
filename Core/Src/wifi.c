@@ -1,4 +1,5 @@
 #include "wifi.h"
+#include "pacman.h"
 
 Userdatatype Espdatatype;
 
@@ -31,12 +32,12 @@ void onReceiveData(){
 //	Espdatatype.UserBuffer;
 //	Espdatatype.UserRecLen;
 
-	char* data = malloc(Espdatatype.UserRecLen);
+//	char* data = malloc(Espdatatype.UserRecLen);
 //	memcpy(data, Espdatatype.UserBuffer, Espdatatype.UserRecLen);
+	Pacman_handleInput(Espdatatype.UserBuffer[0]);
+//	LCD_DrawString(0, 20, "A");
 
-	LCD_DrawString(0, 20, "A");
-
-	free(data);
+//	free(data);
 }
 
 
