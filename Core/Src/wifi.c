@@ -32,11 +32,11 @@ void onReceiveData(){
 //	Espdatatype.UserRecLen;
 
 	char* data = malloc(Espdatatype.UserRecLen);
-	memcpy(data, Espdatatype.UserBuffer, Espdatatype.UserRecLen);
-	printf(data);
+//	memcpy(data, Espdatatype.UserBuffer, Espdatatype.UserRecLen);
 
-	LCD_DrawString(0, 20, data);
-	// Do whatever you want!
+	LCD_DrawString(0, 20, "A");
+
+	free(data);
 }
 
 
