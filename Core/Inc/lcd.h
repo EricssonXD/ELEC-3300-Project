@@ -2,6 +2,7 @@
 #define	__LCD_H
 
 #include "stm32f1xx_hal.h"
+#include "pacman.h"
 
 #define      FSMC_Addr_LCD_CMD         ( ( uint32_t ) 0x60000000 )	    
 #define      FSMC_Addr_LCD_DATA        ( ( uint32_t ) 0x60020000 )          
@@ -68,6 +69,13 @@ void            LCD_DrawLine		( uint16_t usC1, uint16_t usP1, uint16_t usC2, uin
 void            LCD_DrawChar		( uint16_t usC, uint16_t usP, const char cChar);
 void            LCD_DrawString		( uint16_t usC, uint16_t usP, const char * pStr);
 void            LCD_DrawDot		( uint16_t usC, uint16_t usP, uint16_t usColor );
-void 		LCD_DrawEllipse		( uint16_t usC, uint16_t usP, uint16_t SR, uint16_t LR, uint16_t usColor);
+void 			LCD_DrawEllipse		( uint16_t usC, uint16_t usP, uint16_t SR, uint16_t LR, uint16_t usColor);
+void 			LCD_DrawChar_Color ( uint16_t usC, uint16_t usP, const char cChar, uint16_t usColor_Background, uint16_t usColor_Foreground );
+void 			LCD_DrawString_Color ( uint16_t usC, uint16_t usP, const char * pStr, uint16_t usColor_Background, uint16_t usColor_Foreground );
+void			LCD_DrawPixel		( uint16_t startX, uint16_t startY, uint16_t size, uint16_t color);
+void 			LCD_DrawCircle		( uint16_t center_x, uint16_t center_y, uint16_t radius, uint16_t color);
+void 			LCD_DrawPacman		( Pacman* pacman, uint16_t startX, uint16_t startY, uint16_t size, uint16_t color);
+void 			LCD_DrawFood		( uint16_t startX, uint16_t startY, uint16_t foodSize, uint16_t pixelSize, uint16_t color);
+void 		initMaze		( uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pacman);
 #endif 
 
