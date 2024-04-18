@@ -41,23 +41,13 @@ void Pacman_handleInput(uint8_t input){
 }
 // Public Functions
 void Pacman_gameloop(){
-	  if(PACMAN_GAMEDATA.prevDirection != RIGHT && PACMAN_GAMEDATA.inputDirection == LEFT){
-		  // Only update prevDirection if successfully moved
-		  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, LEFT))
-		  PACMAN_GAMEDATA.prevDirection = LEFT;
-	  }
-	  else if(PACMAN_GAMEDATA.prevDirection != DOWN && PACMAN_GAMEDATA.inputDirection == UP){
-		  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, UP))
-		  PACMAN_GAMEDATA.prevDirection = UP;
-	  }
-	  else if(PACMAN_GAMEDATA.prevDirection != LEFT && PACMAN_GAMEDATA.inputDirection == RIGHT){
-		  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, RIGHT))
-		  PACMAN_GAMEDATA.prevDirection = RIGHT;
-	  }
-	  else if(PACMAN_GAMEDATA.prevDirection != UP && PACMAN_GAMEDATA.inputDirection == DOWN){
-		  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, DOWN))
-		  PACMAN_GAMEDATA.prevDirection = DOWN;
+
+
+	// Handle input direction
+	  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection)){
+		  PACMAN_GAMEDATA.prevDirection = PACMAN_GAMEDATA.inputDirection;
 	  } else {
+		  // Go in orignial direction if cannot go in new directino
 		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection);
 	  }
 

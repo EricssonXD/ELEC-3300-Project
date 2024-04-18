@@ -93,6 +93,7 @@ int main(void)
   MX_FSMC_Init();
   MX_USART3_UART_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 //  USART3_IRQHandler();
   LCD_INIT();
@@ -122,6 +123,7 @@ int main(void)
 		  displayReady = 0;
 	  }
 
+	  // inital debugging screen
 	  if(displayReady == 2) {
 	   HAL_Delay(1000);
 	   sprintf(numberString, "%d", number);
@@ -129,6 +131,7 @@ int main(void)
 	   number++;
 	   if(number==10)number=0;
 	  }
+
 
 	  if(displayReady == 0){
 		  Pacman_gamestart();
