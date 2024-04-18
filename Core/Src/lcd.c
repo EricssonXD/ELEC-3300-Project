@@ -669,7 +669,7 @@ void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pa
     uint16_t foodSize = 3;
     uint16_t buffSize = 6;
     uint16_t wallColor = BLUE;
-    uint16_t initDirection = LEFT;
+//    uint16_t initDirection = LEFT;
     pacman->score = 0;
 
 

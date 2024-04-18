@@ -8,6 +8,47 @@
 
 #include "pacman.h"
 #include "lcd.h"
+#include "maze.h"
+#include <stdio.h>
+#include <string.h>
+
+PacmanGameData PACMAN_GAMEDATA;
+
+void Pacman_gameloop(){
+	  if(PACMAN_GAMEDATA.prevDirection != RIGHT && PACMAN_GAMEDATA.prevDirection != LEFT){
+		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, LEFT);
+		  PACMAN_GAMEDATA.prevDirection = LEFT;
+	  }
+	  else if(PACMAN_GAMEDATA.prevDirection != DOWN || PACMAN_GAMEDATA.pacman.direction == STOP){
+		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, UP);
+		  PACMAN_GAMEDATA.prevDirection = UP;
+	  }
+	  else if(PACMAN_GAMEDATA.prevDirection != LEFT || PACMAN_GAMEDATA.pacman.direction == STOP){
+		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, RIGHT);
+		  PACMAN_GAMEDATA.prevDirection = RIGHT;
+	  }
+	  else if(PACMAN_GAMEDATA.prevDirection != UP || PACMAN_GAMEDATA.pacman.direction == STOP){
+		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, DOWN);
+		  PACMAN_GAMEDATA.prevDirection = DOWN;
+	  }
+	  else{
+		  PACMAN_GAMEDATA.prevDirection = STOP;
+	  }
+
+	  char scoreDisplay[20];
+	  sprintf(PACMAN_GAMEDATA.scoreString, "%d", PACMAN_GAMEDATA.pacman.score);
+	  strcpy(scoreDisplay, "Score: ");
+	  strcat(scoreDisplay, PACMAN_GAMEDATA.scoreString);
+	  LCD_DrawString_Color (0, 280, scoreDisplay, BLACK, YELLOW);
+}
+
+void Pacman_gamestart(){
+
+
+	memcpy(PACMAN_GAMEDATA.mazeData, MAZE1, sizeof (char) * 26 * 23);
+	LCD_Clear(0, 0, 240, 320, BLACK);
+	initMaze(mazeStartX, mazeStartY, PACMAN_GAMEDATA.mazeData, &PACMAN_GAMEDATA.pacman);
+}
 
 void Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction) {
 	//checking movement allowed or not?

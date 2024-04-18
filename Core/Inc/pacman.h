@@ -32,6 +32,18 @@ typedef struct {
     uint16_t score;
 } Pacman;
 
+typedef struct
+{
+	Pacman pacman;
+	Direction prevDirection;
+	char scoreString[10];
+	char mazeData[26][23];
+
+} PacmanGameData;
+
+
 void Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction);
+void Pacman_gamestart();
+void Pacman_gameloop();
 
 #endif /* INC_PACMAN_H_ */

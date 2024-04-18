@@ -97,46 +97,17 @@ int main(void)
 //  USART3_IRQHandler();
   LCD_INIT();
   LCD_DrawString(0, 0, "Initalizing Wifi");
-
-//  wifiInit(SERVER);
+  wifiInit(SERVER);
   LCD_DrawString(0, 0, "Wifi Initialized");
-  // int number = 0;
-  // char numberString[4];
+  int number = 0;
+  char numberString[4];
+
   GPIO_PinState k1 = GPIO_PIN_RESET;
   int displayReady = 2;
-  Pacman pacman;
-  char scoreString[10];
 
-  char mazeData[][23] = {
-      "#######################",
-      "#**********#**********#",
-      "#@###*####*#*####*###@#",
-      "#*###*####*#*####*###*#",
-      "#*********************#",
-      "#*###*#*#######*#*###*#",
-      "#*****#*#######*#*****#",
-      "#####*#****#****#*#####",
-      "#####*####*#*####*#####",
-      "#####*#### # ####*#####",
-      "#####*#         #*#####",
-      "#####*# ### ### #*#####",
-      "     *  #GG GG#  *     ",
-      "#####*# ####### #*#####",
-      "#####*#         #*#####",
-      "#####*# ####### #*#####",
-      "#####*# ####### #*#####",
-      "#**********#**********#",
-      "#*###*####*#*####*###*#",
-      "#@**#******P******#**@#",
-      "###*#*#*#######*#*#*###",
-      "#*****#****#****#*****#",
-      "#*########*#*########*#",
-      "#*########*#*########*#",
-      "#*********************#",
-      "#######################"
-  };
 
-  Direction prevDirection;
+
+
 //  getIP();
 
   /* USER CODE END 2 */
@@ -145,52 +116,27 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  // HAL_Delay(1000);
-	  // sprintf(numberString, "%d", number);
-	  // LCD_DrawChar(0, 80, *numberString);
-	  // number++;
-	  // if(number==10)number=0;
 
 	  k1 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);
 	  if(k1 == GPIO_PIN_SET){
 		  displayReady = 0;
 	  }
 
-	  if(displayReady == 0){
-		  LCD_Clear(0, 0, 240, 320, BLACK);
-		  initMaze(mazeStartX, mazeStartY, mazeData, &pacman);
+	  if(displayReady == 2) {
+	   HAL_Delay(1000);
+	   sprintf(numberString, "%d", number);
+	   LCD_DrawChar(0, 80, *numberString);
+	   number++;
+	   if(number==10)number=0;
+	  }
 
+	  if(displayReady == 0){
+		  Pacman_gamestart();
 		  displayReady = 1;
 	  }
 
 	  if(displayReady == 1){
-		  if(prevDirection != RIGHT && prevDirection != LEFT){
-			  Pacman_update(&pacman, mazeData, LEFT);
-			  prevDirection = LEFT;
-		  }
-		  else if(prevDirection != DOWN || pacman.direction == STOP){
-			  Pacman_update(&pacman, mazeData, UP);
-			  prevDirection = UP;
-		  }
-		  else if(prevDirection != LEFT || pacman.direction == STOP){
-			  Pacman_update(&pacman, mazeData, RIGHT);
-			  prevDirection = RIGHT;
-		  }
-		  else if(prevDirection != UP || pacman.direction == STOP){
-			  Pacman_update(&pacman, mazeData, DOWN);
-			  prevDirection = DOWN;
-		  }
-		  else{
-			  prevDirection = STOP;
-		  }
-
-		  char scoreDisplay[20];
-		  sprintf(scoreString, "%d", pacman.score);
-		  strcpy(scoreDisplay, "Score: ");
-		  strcat(scoreDisplay, scoreString);
-		  LCD_DrawString_Color (0, 280, scoreDisplay, BLACK, YELLOW);
-
-
+		  Pacman_gameloop();
 		  HAL_Delay(200);
 	  }
     /* USER CODE END WHILE */
