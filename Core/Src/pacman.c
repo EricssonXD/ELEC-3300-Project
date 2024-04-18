@@ -22,16 +22,16 @@ void createMaze(const void * maze){
 void Pacman_handleInput(uint8_t input){
 	switch (input) {
 	  case 0:
-		PACMAN_GAMEDATA.pacman.direction = UP;
+		PACMAN_GAMEDATA.inputDirection= UP;
 	    break;
 	  case 1:
-		PACMAN_GAMEDATA.pacman.direction = DOWN;
+		PACMAN_GAMEDATA.inputDirection = DOWN;
 	    break;
 	  case 2:
-		PACMAN_GAMEDATA.pacman.direction = LEFT;
+		PACMAN_GAMEDATA.inputDirection = LEFT;
 	    break;
 	  case 3:
-		PACMAN_GAMEDATA.pacman.direction = RIGHT;
+		PACMAN_GAMEDATA.inputDirection = RIGHT;
 	    break;
 
 	  default:
@@ -41,24 +41,24 @@ void Pacman_handleInput(uint8_t input){
 }
 // Public Functions
 void Pacman_gameloop(){
-	  if(PACMAN_GAMEDATA.prevDirection != RIGHT && PACMAN_GAMEDATA.pacman.direction == LEFT){
-		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, LEFT);
+	  if(PACMAN_GAMEDATA.prevDirection != RIGHT && PACMAN_GAMEDATA.inputDirection == LEFT){
+		  // Only update prevDirection if successfully moved
+		  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, LEFT))
 		  PACMAN_GAMEDATA.prevDirection = LEFT;
 	  }
-	  else if(PACMAN_GAMEDATA.prevDirection != DOWN && PACMAN_GAMEDATA.pacman.direction == UP){
-		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, UP);
+	  else if(PACMAN_GAMEDATA.prevDirection != DOWN && PACMAN_GAMEDATA.inputDirection == UP){
+		  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, UP))
 		  PACMAN_GAMEDATA.prevDirection = UP;
 	  }
-	  else if(PACMAN_GAMEDATA.prevDirection != LEFT && PACMAN_GAMEDATA.pacman.direction == RIGHT){
-		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, RIGHT);
+	  else if(PACMAN_GAMEDATA.prevDirection != LEFT && PACMAN_GAMEDATA.inputDirection == RIGHT){
+		  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, RIGHT))
 		  PACMAN_GAMEDATA.prevDirection = RIGHT;
 	  }
-	  else if(PACMAN_GAMEDATA.prevDirection != UP && PACMAN_GAMEDATA.pacman.direction == DOWN){
-		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, DOWN);
+	  else if(PACMAN_GAMEDATA.prevDirection != UP && PACMAN_GAMEDATA.inputDirection == DOWN){
+		  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, DOWN))
 		  PACMAN_GAMEDATA.prevDirection = DOWN;
-	  }
-	  else{
-		  PACMAN_GAMEDATA.prevDirection = STOP;
+	  } else {
+		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection);
 	  }
 
 	  char scoreDisplay[20];
@@ -75,7 +75,7 @@ void Pacman_gamestart(){
 }
 
 
-void Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction) {
+uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction) {
 	//checking movement allowed or not?
 
 	uint16_t curX = pacman->curX;
@@ -151,5 +151,7 @@ void Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction) {
     	borderStartX = mazeStartX + pacman->pastX * gamePixelSize;
 		borderStartY = mazeStartY + pacman->pastY * gamePixelSize;
 		LCD_DrawPixel(borderStartX, borderStartY, gamePixelSize, BLACK);
+		return 1;
     }
+    return 0;
 }
