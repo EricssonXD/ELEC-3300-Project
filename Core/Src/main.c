@@ -100,6 +100,10 @@ int main(void)
   LCD_DrawString(0, 0, "Initalizing Wifi");
   wifiInit(SERVER);
   LCD_DrawString(0, 0, "Wifi Initialized");
+  getIP();
+//  HAL_Delay(2000);
+  LCD_DrawString(0, 20, ipAddr);
+//  ipAddr;
   int number = 0;
   char numberString[4];
 

@@ -29,8 +29,8 @@ extern DMA_HandleTypeDef hdma_usart3_rx; // CHANGE THIS
 
 // Handle received data
 void onReceiveData(){
-//	Espdatatype.UserBuffer;
-//	Espdatatype.UserRecLen;
+	Espdatatype.UserBuffer;
+	Espdatatype.UserRecLen;
 
 //	char* data = malloc(Espdatatype.UserRecLen);
 //	memcpy(data, Espdatatype.UserBuffer, Espdatatype.UserRecLen);
