@@ -17,9 +17,23 @@
 
 PacmanGameData PACMAN_GAMEDATA = {.gameloopReady = 0};
 
-
 // Private functions
-void createMaze(const void * maze){
+
+/*
+Start the gameloop timer
+The timer runs in interrupt, so if the lcd display is too slow it will interrupt the lcd update
+Therefore, if there are anything that takes a long time to run and should not be interrupted by game loop, please use stopGameLoopTimer()
+*/
+void startGameloopTimer(){
+    HAL_TIM_Base_Start_IT(&htim4);
+}
+
+// See startGameLoopTimer()
+void stopGameloopTimer(){
+    HAL_TIM_Base_Stop_IT(&htim4);
+
+}
+void setMaze(const void * maze){
 	memcpy(PACMAN_GAMEDATA.mazeData, maze, sizeof (char) * MAZE_HEIGHT * MAZE_WIDTH);
 }
 
@@ -85,14 +99,15 @@ void Pacman_gameloop(){
 }
 
 void Pacman_gamestart(){
+	// Make sure the gameloop timer is stopped
+	stopGameloopTimer();
 	// Starts the pacman game
-	createMaze(MAZE1);
+	setMaze(MAZE1);
 	LCD_Clear(0, 0, 240, 320, BLACK);
 	initMaze(mazeStartX, mazeStartY, PACMAN_GAMEDATA.mazeData, &PACMAN_GAMEDATA.pacman);
 
 	// Tells the code the the game is initialized and gameloop will start to be called
-    HAL_TIM_Base_Start_IT(&htim4);
-
+	startGameloopTimer();
 	PACMAN_GAMEDATA.gameloopReady = 1;
 }
 
