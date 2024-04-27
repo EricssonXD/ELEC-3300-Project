@@ -94,7 +94,7 @@ int main(void)
   MX_FSMC_Init();
   MX_USART3_UART_Init();
   MX_TIM2_Init();
-  MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 //  USART3_IRQHandler();
   LCD_INIT();
@@ -109,9 +109,9 @@ int main(void)
   LCD_DrawString(0, 20, ipAddr);
 
   // Init Keypad
-  LCD_DrawString(0, 0, "Initalizing Keypad");
+  LCD_DrawString(0, 40, "Initalizing Keypad");
   KeyPad_Init();
-  LCD_DrawString(0, 0, "Keypad Initialized");
+  LCD_DrawString(0, 40, "Keypad Initialized");
 
 
 
@@ -166,7 +166,7 @@ int main(void)
 
 	  if(displayReady == 1){
 		  Pacman_handleKeypadInput(200);
-		  Pacman_gameloop();
+//		  Pacman_gameloop();
 //		  HAL_Delay(200);
 	  }
     /* USER CODE END WHILE */

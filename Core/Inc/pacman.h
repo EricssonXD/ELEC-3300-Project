@@ -14,6 +14,8 @@
 #define gamePixelSize	10
 #define mazeStartX	5
 #define mazeStartY	5
+#define MAZE_WIDTH 23
+#define MAZE_HEIGHT 26
 
 typedef enum {
     LEFT,
@@ -34,11 +36,12 @@ typedef struct {
 
 typedef struct
 {
+	uint8_t gameloopReady; // Realized that this is useless after figuring out the timer, but I'll leave it here just in case
 	Pacman pacman;
 	Direction prevDirection;
 	Direction inputDirection;
 	char scoreString[10];
-	char mazeData[26][23];
+	char mazeData[MAZE_HEIGHT][MAZE_WIDTH];
 
 } PacmanGameData;
 

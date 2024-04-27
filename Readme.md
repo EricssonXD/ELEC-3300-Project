@@ -10,3 +10,7 @@ PC7  -> Col1
 PC6  -> Col2
 PC12 -> Col1
 PD2  -> Col2
+
+Timers:
+TIM2 used by wifi module
+TIM3 is the game loop 72Mhz/7200/2000 = 5Hz = 200ms per game loop
