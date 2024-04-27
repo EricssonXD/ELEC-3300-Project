@@ -25,12 +25,12 @@ The timer runs in interrupt, so if the lcd display is too slow it will interrupt
 Therefore, if there are anything that takes a long time to run and should not be interrupted by game loop, please use stopGameLoopTimer()
 */
 void startGameloopTimer(){
-    HAL_TIM_Base_Start_IT(&htim4);
+    HAL_TIM_Base_Start_IT(&htim6);
 }
 
 // See startGameLoopTimer()
 void stopGameloopTimer(){
-    HAL_TIM_Base_Stop_IT(&htim4);
+    HAL_TIM_Base_Stop_IT(&htim6);
 
 }
 void setMaze(const void * maze){

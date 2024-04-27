@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dac.h"
 #include "dma.h"
 #include "tim.h"
 #include "usart.h"
@@ -94,7 +95,8 @@ int main(void)
   MX_FSMC_Init();
   MX_USART3_UART_Init();
   MX_TIM2_Init();
-  MX_TIM4_Init();
+  MX_DAC_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 //  USART3_IRQHandler();
   LCD_INIT();
