@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "pacman.h"
+#include "keypad.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,13 +98,23 @@ int main(void)
   /* USER CODE BEGIN 2 */
 //  USART3_IRQHandler();
   LCD_INIT();
+
+  // Init WIFI
   LCD_DrawString(0, 0, "Initalizing Wifi");
   wifiInit(SERVER);
   LCD_DrawString(0, 0, "Wifi Initialized");
+
+  // Get IP
   getIP();
-//  HAL_Delay(2000);
   LCD_DrawString(0, 20, ipAddr);
-//  ipAddr;
+
+  // Init Keypad
+  LCD_DrawString(0, 0, "Initalizing Keypad");
+  KeyPad_Init();
+  LCD_DrawString(0, 0, "Keypad Initialized");
+
+
+
   int number = 0;
   char numberString[4];
 
@@ -129,6 +140,17 @@ int main(void)
 
 	  // inital debugging screen
 	  if(displayReady == 2) {
+	   continue;
+	   char keypadResult = KeyPad_WaitForKeyGetChar(100);
+	   if(keypadResult == '1'){
+
+		   LCD_DrawChar(0, 100, 'G');
+
+	   }
+
+
+	   LCD_DrawChar(0, 80, keypadResult);
+
 	   HAL_Delay(1000);
 	   sprintf(numberString, "%d", number);
 	   LCD_DrawChar(0, 80, *numberString);
@@ -143,8 +165,9 @@ int main(void)
 	  }
 
 	  if(displayReady == 1){
+		  Pacman_handleKeypadInput(200);
 		  Pacman_gameloop();
-		  HAL_Delay(200);
+//		  HAL_Delay(200);
 	  }
     /* USER CODE END WHILE */
 

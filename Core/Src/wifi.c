@@ -6,19 +6,19 @@ Userdatatype Espdatatype;
 UART_HandleTypeDef *wifiCom = &huart3; // CHANGE THIS
 
 uint8_t persent_mode;
-bool atFlag = FALSE;
-bool rstFlag = FALSE;
-bool modeFlag = FALSE;
-bool sendReadyFlag = FALSE;
-bool sendOkFlag = FALSE;
-bool wifiConnectFlag = FALSE;
-bool serverConnectFlag = FALSE;
-bool serverDisConnectFlag = FALSE;
-bool serverCreateFlag = FALSE;
-bool hotspotFlag = FALSE;
-bool mulConFlag = FALSE;
+bool atFlag = false;
+bool rstFlag = false;
+bool modeFlag = false;
+bool sendReadyFlag = false;
+bool sendOkFlag = false;
+bool wifiConnectFlag = false;
+bool serverConnectFlag = false;
+bool serverDisConnectFlag = false;
+bool serverCreateFlag = false;
+bool hotspotFlag = false;
+bool mulConFlag = false;
 
-bool dummy = FALSE;
+bool dummy = false;
 
 char ipAddr[16];
 char gateway[16];
@@ -29,8 +29,8 @@ extern DMA_HandleTypeDef hdma_usart3_rx; // CHANGE THIS
 
 // Handle received data
 void onReceiveData(){
-	Espdatatype.UserBuffer;
-	Espdatatype.UserRecLen;
+//	Espdatatype.UserBuffer;
+//	Espdatatype.UserRecLen;
 
 //	char* data = malloc(Espdatatype.UserRecLen);
 //	memcpy(data, Espdatatype.UserBuffer, Espdatatype.UserRecLen);
@@ -99,7 +99,7 @@ void clientStart(void) {
 		Send_AT_commend(CWMODE1, &modeFlag, 100);
 		// Reset
 		if(Send_AT_commend(RST, &rstFlag, 500))
-			rstFlag = FALSE;
+			rstFlag = false;
 
 		// Get CWMode after setting to station mode
 		getCWMode();
@@ -133,7 +133,7 @@ void serverConnect(void) {
 	strcat(cmd,CLIENT_CONNECT_STR3);
 	strcat(cmd, CLIENT_PORT);
 	if(Send_AT_commend(cmd, &serverConnectFlag, 500))
-		serverDisConnectFlag = FALSE;
+		serverDisConnectFlag = false;
 	while(!serverConnectFlag){}
 }
 
@@ -141,7 +141,7 @@ void serverConnect(void) {
 // Disconnect from server
 void serverDisConnect(void) {
 	if(Send_AT_commend("AT+CIPCLOSE", &serverDisConnectFlag, 100))
-		serverConnectFlag = FALSE;
+		serverConnectFlag = false;
 }
 
 // Start as AP mode
@@ -151,7 +151,7 @@ void serverStart(void) {
 		Send_AT_commend(CWMODE2, &modeFlag, 100);
 		// Reset
 		if(Send_AT_commend(RST, &rstFlag, 500))
-			rstFlag = FALSE;
+			rstFlag = false;
 		// Get CWMode after setting to station mode
 		getCWMode();
 	}
@@ -173,22 +173,22 @@ void serverCreate(void) {
 // Handle data when timer triggers interrupt
 void recDataHandle(void)
 {
-	static bool recRstFlag = FALSE;
+	static bool recRstFlag = false;
 	if(Espdatatype.AtRecFlag == 1) {
 		// Start ESP8622
 		if(findStr("AT\r\r\n\r\nOK"))
-			atFlag = TRUE;
+			atFlag = true;
 		// Reset
 		else if(findStr("AT+RST") && findStr(OK)) {
-			recRstFlag = TRUE;
+			recRstFlag = true;
 			if(findStr("ready")) {
-				rstFlag = TRUE;
-				recRstFlag = FALSE;
+				rstFlag = true;
+				recRstFlag = false;
 			}
 		}
 		// Set current working mode
 		else if(findStr("AT+CWMODE=") && findStr(OK))
-			modeFlag = TRUE;
+			modeFlag = true;
 		// Query current working mode
 		else if(findStr("AT+CWMODE?")) {
 			char *addr = strstr((char *)Espdatatype.AtBuffer, "+CWMODE:");
@@ -200,29 +200,29 @@ void recDataHandle(void)
 			//persent_mode = Espdatatype.AtBuffer[21]-0x30;
 		}
 		else if(findStr("WIFI CONNECTED"))
-			wifiConnectFlag = TRUE;
+			wifiConnectFlag = true;
 		// Connect to server
 		else if((findStr("AT+CIPSTART") && findStr("CONNECT") && findStr("OK")) || findStr("ALREADY CONNECTED")){
-			serverConnectFlag = TRUE;
+			serverConnectFlag = true;
 		}
 		// Disconnect from server
 		else if((findStr("AT+CIPCLOSE") && findStr("OK")))
-			serverDisConnectFlag = TRUE;
+			serverDisConnectFlag = true;
 		// Sent data
 		else if(findStr("AT+CIPSEND") && findStr("OK") && findStr(">"))
-			sendReadyFlag = TRUE;
+			sendReadyFlag = true;
 		else if(findStr("SEND OK"))
-			sendOkFlag = TRUE;
+			sendOkFlag = true;
 		else if(findStr("AT+CWSAP=") && findStr(OK))
-			hotspotFlag = TRUE;
+			hotspotFlag = true;
 		else if(findStr("AT+CIPSERVER") && findStr(OK))
-			serverCreateFlag = TRUE;
+			serverCreateFlag = true;
 		else if(findStr(CIPMUX1) && findStr(OK))
-			mulConFlag = TRUE;
+			mulConFlag = true;
 		else if(findStr(CIPMUX0) && findStr(OK))
-			mulConFlag = TRUE;
+			mulConFlag = true;
 		else if(findStr("AT+CIPMUX") && findStr("link") && findStr("builded"))
-			mulConFlag = TRUE;
+			mulConFlag = true;
 		else if(findStr(CIFSR) && findStr(OK)) {
 			char *addr = strstr((char *)Espdatatype.AtBuffer, "+CIFSR:APIP,\"");
 			if(*addr) {
@@ -284,27 +284,27 @@ void recDataHandle(void)
 
 // Send data
 void sendData(char *userdata, uint16_t userLength) {
-	if(serverConnectFlag == FALSE) // Did not connect to server
+	if(serverConnectFlag == false) // Did not connect to server
 		return;
 	#if(!PASSTHROUGH)
 		// Set the data length
 		sendCommandCreate(userLength);
-		while(sendReadyFlag == FALSE);
+		while(sendReadyFlag == false);
 	#endif
 	// Send the data
 	HAL_UART_Transmit(wifiCom, (uint8_t*) userdata, userLength, 0xFFFF);
 	#if(!PASSTHROUGH)
 		int counter = 0;
-		// If it doesn't change to TRUE after ~500ms, just skip it
-		while(sendOkFlag == FALSE){
+		// If it doesn't change to true after ~500ms, just skip it
+		while(sendOkFlag == false){
 			HAL_Delay(1);
 			if(counter == 500){
 				break;
 			}
 			counter++;
 		}
-		sendReadyFlag = FALSE;
-		sendOkFlag = FALSE;
+		sendReadyFlag = false;
+		sendOkFlag = false;
 	#endif
 }
 
@@ -357,7 +357,7 @@ uint8_t wifiStart(void) {
 		if(Send_AT_commend("AT", &atFlag, 100))
 			break;
 		if(Send_AT_commend("AT+RST", &rstFlag, 500)) // Unable to start wifi, so we try to reset the module
-			rstFlag = FALSE; //
+			rstFlag = false; //
 		HAL_Delay(500); // Failed to start wifi, try again in 0.5s
 	}
 	// Successfully started

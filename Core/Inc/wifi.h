@@ -12,6 +12,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "lcd.h"
+#include <stdbool.h>
 
 /* demoap -> Your AP name
  * A12345678 -> password
@@ -88,7 +89,7 @@ typedef struct
 	uint8_t  AtBuffer[AT_BUFF_SIZE];				// ATָ�����ݴ���buffer
 }Userdatatype;
 
-typedef enum {FALSE = 0,TRUE = 1} bool;
+//typedef enum {FALSE = 0,TRUE = 1} bool;
 extern bool serverConnectFlag;
 extern Userdatatype Espdatatype;  //�ṹ��ȫ�ֶ���
 extern bool dataAnalyzeFlag;

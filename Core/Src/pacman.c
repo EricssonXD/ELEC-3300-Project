@@ -11,6 +11,7 @@
 #include "maze.h"
 #include <stdio.h>
 #include <string.h>
+#include "keypad.h"
 
 PacmanGameData PACMAN_GAMEDATA;
 
@@ -31,6 +32,28 @@ void Pacman_handleInput(uint8_t input){
 		PACMAN_GAMEDATA.inputDirection = LEFT;
 	    break;
 	  case 3:
+		PACMAN_GAMEDATA.inputDirection = RIGHT;
+	    break;
+
+	  default:
+	    // code block
+	}
+
+}
+
+void Pacman_handleKeypadInput(int timeout){
+
+	switch (KeyPad_WaitForKeyGetChar(timeout)) {
+	  case '2':
+		PACMAN_GAMEDATA.inputDirection= UP;
+	    break;
+	  case '8':
+		PACMAN_GAMEDATA.inputDirection = DOWN;
+	    break;
+	  case '4':
+		PACMAN_GAMEDATA.inputDirection = LEFT;
+	    break;
+	  case '6':
 		PACMAN_GAMEDATA.inputDirection = RIGHT;
 	    break;
 

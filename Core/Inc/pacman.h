@@ -47,5 +47,6 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction)
 void Pacman_gamestart();
 void Pacman_gameloop();
 void Pacman_handleInput(uint8_t input);
+void Pacman_handleKeypadInput(int timeout);
 
 #endif /* INC_PACMAN_H_ */
