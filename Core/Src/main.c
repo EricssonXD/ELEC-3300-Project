@@ -106,7 +106,8 @@ int main(void)
 
   // Get IP
   getIP();
-  LCD_DrawString(0, 20, ipAddr);
+  LCD_DrawString(0, 20, "Server IP:");
+  LCD_DrawString(11*8, 20, ipAddr);
 
   // Init Keypad
   LCD_DrawString(0, 40, "Initalizing Keypad");

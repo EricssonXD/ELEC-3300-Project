@@ -40,6 +40,7 @@
  */
 #define SERVER_AP "AT+CWSAP=\"pacman_stm32\",\"ELEC3300\",5,4"
 #define SERVER_START "AT+CIPSERVER=1,3300" // Change 80 to the port you want to expose
+#define SERVERIP_SET "AT+CIPAP_DEF=\"192.168.30.30\""
 
 #define SERVER_CREATE 1 // Create server?
 #define SERVER_CONNECT 1 // Connect to server?

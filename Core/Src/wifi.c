@@ -168,6 +168,8 @@ void serverCreate(void) {
 	// Enable muxing
 	Send_AT_commend("AT+CIPMUX=1", &mulConFlag, 100);
 	Send_AT_commend(SERVER_START, &dummy, 100);
+	Send_AT_commend(SERVERIP_SET, &dummy, 100);
+
 }
 
 // Handle data when timer triggers interrupt
