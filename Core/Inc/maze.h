@@ -30,4 +30,9 @@ static const char MAZE1[][23] = {
 	      "#######################",
 	};
 
+extern int mazeTunnelLeftX;
+extern int mazeTunnelLeftY;
+extern int mazeTunnelRightX;
+extern int mazeTunnelRightY;
+
 #endif

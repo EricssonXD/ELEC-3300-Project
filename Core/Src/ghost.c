@@ -55,14 +55,6 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], uint16_t c
         }
     }
 
-    // Calculate the distance to Pacman for each valid direction
-//    float distances[4] = {100, 100, 100, 100};
-//    for (int i = 0; i < numValidDirections; i++) {
-//    	if()
-//        float distance = sqrtf(powf(nextX - pacX, 2) + powf(nextY - pacY, 2));
-//        distances[i] = distance;
-//    }
-
     // Find the index of the shortest distance
     int shortestIndex = 0;
     float shortestDistance = distances[0];
@@ -89,6 +81,17 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], uint16_t c
 	}
 	else if(optimalDir == DOWN){
 		ghost->curY++;
+	}
+
+    if (curX == mazeTunnelLeftX && curY == mazeTunnelLeftY) {
+		ghost->curX = mazeTunnelRightX;
+		ghost->curY = mazeTunnelRightY;
+    }
+
+	// Check if the ghost is at the right tunnel
+	if (curX == mazeTunnelRightX && curY == mazeTunnelRightY) {
+		ghost->curX = mazeTunnelLeftX;
+		ghost->curY = mazeTunnelLeftY;
 	}
 
     // Update ghost display

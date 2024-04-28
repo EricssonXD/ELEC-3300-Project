@@ -107,7 +107,11 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction)
     switch (direction) {
         case LEFT:
         	mazeChar = mazeData[curY][curX - 1];
-        	if(mazeChar != '#' ){
+        	if(mazeChar == 'L'){
+        		pacman->curX = mazeTunnelRightX;
+        		pacman->curY = mazeTunnelRightY;
+        	}
+        	else if(mazeChar != '#'){
         		pacman->curX--;
         		pacman->direction = LEFT;
         	}
@@ -117,7 +121,11 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction)
             break;
         case RIGHT:
             mazeChar = mazeData[curY][curX + 1];
-            if(mazeChar != '#' ){
+            if(mazeChar == 'R'){
+				pacman->curX = mazeTunnelLeftX;
+				pacman->curY = mazeTunnelLeftY;
+			}
+            else if(mazeChar != '#' ){
             	pacman->curX++;
             	pacman->direction = RIGHT;
 			}
