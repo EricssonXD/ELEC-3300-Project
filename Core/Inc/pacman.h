@@ -10,18 +10,17 @@
 
 #include <stdint.h>
 #include <math.h>
+#include "ghost.h"
 
 #define gamePixelSize	10
 #define mazeStartX	5
 #define mazeStartY	5
+#define numGhost	4
 
 typedef enum {
-    LEFT,
-    RIGHT,
-    UP,
-    DOWN,
-	STOP
-} Direction;
+    normal,
+    buff,
+} State;
 
 typedef struct {
     uint16_t curX;
@@ -30,11 +29,13 @@ typedef struct {
     uint16_t pastY;
     Direction direction;
     uint16_t score;
+    State state;
 } Pacman;
 
 typedef struct
 {
 	Pacman pacman;
+	Ghost ghosts[numGhost];
 	Direction prevDirection;
 	Direction inputDirection;
 	char scoreString[10];

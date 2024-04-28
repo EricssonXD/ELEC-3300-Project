@@ -64,27 +64,32 @@ void Pacman_handleKeypadInput(int timeout){
 }
 // Public Functions
 void Pacman_gameloop(){
-
+	uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREY};
 
 	// Handle input direction
-	  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection)){
-		  PACMAN_GAMEDATA.prevDirection = PACMAN_GAMEDATA.inputDirection;
-	  } else {
-		  // Go in orignial direction if cannot go in new directino
-		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection);
-	  }
+	if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection)){
+	  PACMAN_GAMEDATA.prevDirection = PACMAN_GAMEDATA.inputDirection;
+	} else {
+	  // Go in original direction if cannot go in new direction
+	  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection);
+	}
 
-	  char scoreDisplay[20];
-	  sprintf(PACMAN_GAMEDATA.scoreString, "%d", PACMAN_GAMEDATA.pacman.score);
-	  strcpy(scoreDisplay, "Score: ");
-	  strcat(scoreDisplay, PACMAN_GAMEDATA.scoreString);
-	  LCD_DrawString_Color (0, 280, scoreDisplay, BLACK, YELLOW);
+	for(int i=0; i<numGhost; i++){
+	  Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
+	  Ghost_update(currentGhost, &PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, ghostColors[i]);
+	}
+
+	char scoreDisplay[20];
+	sprintf(PACMAN_GAMEDATA.scoreString, "%d", PACMAN_GAMEDATA.pacman.score);
+	strcpy(scoreDisplay, "Score: ");
+	strcat(scoreDisplay, PACMAN_GAMEDATA.scoreString);
+	LCD_DrawString_Color (0, 280, scoreDisplay, BLACK, YELLOW);
 }
 
 void Pacman_gamestart(){
 	createMaze(MAZE1);
 	LCD_Clear(0, 0, 240, 320, BLACK);
-	initMaze(mazeStartX, mazeStartY, PACMAN_GAMEDATA.mazeData, &PACMAN_GAMEDATA.pacman);
+	initMaze(mazeStartX, mazeStartY, PACMAN_GAMEDATA.mazeData, &PACMAN_GAMEDATA.pacman, &PACMAN_GAMEDATA.ghosts);
 }
 
 
