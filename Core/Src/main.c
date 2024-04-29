@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dac.h"
 #include "dma.h"
 #include "tim.h"
 #include "usart.h"
@@ -94,7 +95,8 @@ int main(void)
   MX_FSMC_Init();
   MX_USART3_UART_Init();
   MX_TIM2_Init();
-  MX_TIM3_Init();
+  MX_DAC_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 //  USART3_IRQHandler();
   LCD_INIT();
@@ -106,12 +108,13 @@ int main(void)
 
   // Get IP
   getIP();
-  LCD_DrawString(0, 20, ipAddr);
+  LCD_DrawString(0, 20, "Server IP:");
+  LCD_DrawString(11*8, 20, ipAddr);
 
   // Init Keypad
-  LCD_DrawString(0, 0, "Initalizing Keypad");
+  LCD_DrawString(0, 40, "Initalizing Keypad");
   KeyPad_Init();
-  LCD_DrawString(0, 0, "Keypad Initialized");
+  LCD_DrawString(0, 40, "Keypad Initialized");
 
 
 
