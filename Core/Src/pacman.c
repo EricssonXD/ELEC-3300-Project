@@ -110,6 +110,7 @@ void Pacman_gamestart(){
 	// Starts the pacman game
 	setMaze(MAZE1);
 	LCD_Clear(0, 0, 240, 320, BLACK);
+  
 	initMaze(mazeStartX, mazeStartY, PACMAN_GAMEDATA.mazeData, &PACMAN_GAMEDATA.pacman, &PACMAN_GAMEDATA.ghosts);
 
 	// Tells the code the the game is initialized and gameloop will start to be called
