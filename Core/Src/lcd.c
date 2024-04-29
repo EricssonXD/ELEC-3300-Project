@@ -1,6 +1,7 @@
 #include "lcd.h"
 #include "ascii.h"	
 #include "pacman.h"
+#include "maze.h"
 
 void		LCD_REG_Config          ( void );
 void		LCD_FillColor           ( uint32_t ulAmout_Point, uint16_t usColor );
@@ -661,7 +662,57 @@ void LCD_DrawBuff(uint16_t startX, uint16_t startY, uint16_t buffSize, uint16_t 
 	LCD_DrawCircle(center_x, center_y, radius, color);
 }
 
-void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pacman)
+void LCD_DrawGhost(Ghost* ghost, uint16_t startX, uint16_t startY, uint16_t size, uint16_t color)
+{
+    // Calculate the center coordinates of the ghost
+    uint16_t center_x = startX + size / 2;
+    uint16_t center_y = startY + size / 2;
+    uint16_t radius = size / 2;
+
+    // Draw the upper half circle
+        for (int x = startX; x < startX + size; x++) {
+            for (int y = startY; y < startY + size; y++) {
+                // Calculate distance from center
+                int dx = x - center_x;
+                int dy = y - center_y;
+                int distance = dx * dx + dy * dy;
+
+                // Check if pixel falls within the upper half circle
+                if (distance <= radius * radius && dy <= 0) {
+                    LCD_DrawDot(x, y, color);
+                }
+            }
+        }
+
+        // Draw the rectangle below the half circle
+        uint16_t rect_startY = startY + size / 2;
+        uint16_t rect_endY = startY + size;
+        uint16_t index = 0;
+        for (int x = startX; x < startX + size; x++) {
+        	if(index == 0 || index == 4 || index == 8){
+        		for (int y = rect_startY; y < rect_endY; y++) {
+					LCD_DrawDot(x, y, color);
+        		}
+        	}
+        	else if(index == 1 || index == 3 || index == 5 || index == 7){
+				for (int y = rect_startY; y < rect_endY-1; y++) {
+					LCD_DrawDot(x, y, color);
+				}
+			}
+        	else if (index == 2 || index == 6){
+        		for (int y = rect_startY; y < rect_endY-2; y++) {
+					LCD_DrawDot(x, y, color);
+				}
+        	}
+        	index++;
+        }
+}
+
+int mazeTunnelLeftX;
+int mazeTunnelLeftY;
+int mazeTunnelRightX;
+int mazeTunnelRightY;
+void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pacman, Ghost (*ghosts)[numGhost])
 {
     uint16_t x, y;
     int mazeWidth = 23;
@@ -669,27 +720,48 @@ void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pa
     uint16_t foodSize = 3;
     uint16_t buffSize = 6;
     uint16_t wallColor = BLUE;
-//    uint16_t initDirection = LEFT;
     pacman->score = 0;
+    uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREY};
+    pacman-> state = NORMAL;
 
+    int ghostIndex = 0; // Variable to keep track of the current ghost being initialized
 
     for (y = 0; y < mazeHeight; y++) {
         for (x = 0; x < mazeWidth; x++) {
             char mazeChar = mazeData[y][x];
             if (mazeChar == '#') { // Wall
                 LCD_DrawPixel(startX + x * gamePixelSize, startY + y * gamePixelSize, gamePixelSize, wallColor);
-            } else if (mazeChar == 'P') { // Pacman
+            }
+            else if (mazeChar == 'P') { // Pacman
                 pacman->curX = x;
                 pacman->curY = y;
                 pacman->direction = LEFT;
                 LCD_DrawPacman(pacman, startX + x * gamePixelSize, startY + y * gamePixelSize, 9, YELLOW);
                 pacman->direction = STOP;
             }
-            else if (mazeChar == '*'){
+            else if (mazeChar == '*') {
             	LCD_DrawFood(startX + x * gamePixelSize, startY + y * gamePixelSize, foodSize, gamePixelSize, GREEN);
             }
-            else if (mazeChar == '@'){
+            else if (mazeChar == '@') {
 				LCD_DrawBuff(startX + x * gamePixelSize, startY + y * gamePixelSize, buffSize, gamePixelSize, YELLOW);
+			}
+            else if (mazeChar == 'G') {
+				// Check if there are remaining ghosts to initialize
+				if (ghostIndex < numGhost) {
+					Ghost* currentGhost = &((*ghosts)[ghostIndex]);
+					currentGhost->curX = x;
+					currentGhost->curY = y;
+					LCD_DrawGhost(currentGhost, startX + x * gamePixelSize, startY + y * gamePixelSize, 9, ghostColors[ghostIndex]);
+					ghostIndex++; // Move to the next ghost
+				}
+			}
+            else if (mazeChar == 'L'){
+            	mazeTunnelLeftX = x;
+            	mazeTunnelLeftY = y;
+            }
+            else if (mazeChar == 'R'){
+            	mazeTunnelRightX = x;
+            	mazeTunnelRightY = y;
 			}
         }
     }

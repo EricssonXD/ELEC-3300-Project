@@ -169,8 +169,9 @@ int main(void)
 
 	  if(displayReady == 1){
 		  Pacman_handleKeypadInput(200);
-//		  Pacman_gameloop();
-//		  HAL_Delay(200);
+
+		  Pacman_gameloop();
+		  HAL_Delay(100);
 	  }
     /* USER CODE END WHILE */
 
