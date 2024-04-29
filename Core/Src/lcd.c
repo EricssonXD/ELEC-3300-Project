@@ -722,6 +722,7 @@ void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pa
     uint16_t wallColor = BLUE;
     pacman->score = 0;
     uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREY};
+    pacman-> state = NORMAL;
 
     int ghostIndex = 0; // Variable to keep track of the current ghost being initialized
 

@@ -94,7 +94,7 @@ void Pacman_gamestart(){
 
 
 uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction) {
-	//checking movement allowed or not?
+	uint16_t pacmanColor = YELLOW;
 
 	uint16_t curX = pacman->curX;
 	uint16_t curY = pacman->curY;
@@ -166,13 +166,18 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction)
     }
     else if(mazeChar == '@'){
     	pacman->score += 50;
+    	pacman->state = BUFF;
     	mazeData[pacman->curY][pacman->curX] = ' ';
+    }
+
+    if(pacman->state == BUFF){
+    	pacmanColor = GREEN;
     }
 
     if(pacman->direction != STOP){
     	uint16_t borderStartX = mazeStartX + pacman->curX * gamePixelSize;
 		uint16_t borderStartY = mazeStartY + pacman->curY * gamePixelSize;
-		LCD_DrawPacman(pacman, borderStartX, borderStartY, 9, YELLOW);
+		LCD_DrawPacman(pacman, borderStartX, borderStartY, 9, pacmanColor);
 
     	borderStartX = mazeStartX + pacman->pastX * gamePixelSize;
 		borderStartY = mazeStartY + pacman->pastY * gamePixelSize;

@@ -18,8 +18,8 @@
 #define numGhost	4
 
 typedef enum {
-    normal,
-    buff,
+    NORMAL,
+    BUFF,
 } State;
 
 typedef struct {
