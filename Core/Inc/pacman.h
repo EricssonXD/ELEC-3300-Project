@@ -47,7 +47,7 @@ typedef struct
 } PacmanGameData;
 
 
-uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction);
+uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction, Position ghostPositions[]);
 void Pacman_gamestart();
 void Pacman_gameloop();
 void Pacman_handleInput(uint8_t input);

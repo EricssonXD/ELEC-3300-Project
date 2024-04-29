@@ -47,7 +47,7 @@
 #define      RED                           0xF800	  
 #define      MAGENTA                       0xF81F	 
 #define      CYAN                          0x7FFF	   
-#define      YELLOW                        0xFFE0	 
+#define      YELLOW                        0xFFE0
 #define      BACKGROUND		           WHITE  
 
 
