@@ -81,21 +81,27 @@ void Pacman_handleKeypadInput(int timeout){
 }
 // Public Functions
 void Pacman_gameloop(){
+	uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREY};
 	if(PACMAN_GAMEDATA.gameloopReady != 1) return;
 
 	// Handle input direction
-	  if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection)){
-		  PACMAN_GAMEDATA.prevDirection = PACMAN_GAMEDATA.inputDirection;
-	  } else {
-		  // Go in orignial direction if cannot go in new directino
-		  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection);
-	  }
+	if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection)){
+	  PACMAN_GAMEDATA.prevDirection = PACMAN_GAMEDATA.inputDirection;
+	} else {
+	  // Go in original direction if cannot go in new direction
+	  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection);
+	}
 
-	  char scoreDisplay[20];
-	  sprintf(PACMAN_GAMEDATA.scoreString, "%d", PACMAN_GAMEDATA.pacman.score);
-	  strcpy(scoreDisplay, "Score: ");
-	  strcat(scoreDisplay, PACMAN_GAMEDATA.scoreString);
-	  LCD_DrawString_Color (0, 280, scoreDisplay, BLACK, YELLOW);
+	for(int i=0; i<numGhost; i++){
+	  Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
+	  Ghost_update(currentGhost, &PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, ghostColors[i]);
+	}
+
+	char scoreDisplay[20];
+	sprintf(PACMAN_GAMEDATA.scoreString, "%d", PACMAN_GAMEDATA.pacman.score);
+	strcpy(scoreDisplay, "Score: ");
+	strcat(scoreDisplay, PACMAN_GAMEDATA.scoreString);
+	LCD_DrawString_Color (0, 280, scoreDisplay, BLACK, YELLOW);
 }
 
 void Pacman_gamestart(){
@@ -104,7 +110,8 @@ void Pacman_gamestart(){
 	// Starts the pacman game
 	setMaze(MAZE1);
 	LCD_Clear(0, 0, 240, 320, BLACK);
-	initMaze(mazeStartX, mazeStartY, PACMAN_GAMEDATA.mazeData, &PACMAN_GAMEDATA.pacman);
+  
+	initMaze(mazeStartX, mazeStartY, PACMAN_GAMEDATA.mazeData, &PACMAN_GAMEDATA.pacman, &PACMAN_GAMEDATA.ghosts);
 
 	// Tells the code the the game is initialized and gameloop will start to be called
 	startGameloopTimer();
@@ -113,7 +120,7 @@ void Pacman_gamestart(){
 
 
 uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction) {
-	//checking movement allowed or not?
+	uint16_t pacmanColor = YELLOW;
 
 	uint16_t curX = pacman->curX;
 	uint16_t curY = pacman->curY;
@@ -126,7 +133,11 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction)
     switch (direction) {
         case LEFT:
         	mazeChar = mazeData[curY][curX - 1];
-        	if(mazeChar != '#' ){
+        	if(mazeChar == 'L'){
+        		pacman->curX = mazeTunnelRightX;
+        		pacman->curY = mazeTunnelRightY;
+        	}
+        	else if(mazeChar != '#'){
         		pacman->curX--;
         		pacman->direction = LEFT;
         	}
@@ -136,7 +147,11 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction)
             break;
         case RIGHT:
             mazeChar = mazeData[curY][curX + 1];
-            if(mazeChar != '#' ){
+            if(mazeChar == 'R'){
+				pacman->curX = mazeTunnelLeftX;
+				pacman->curY = mazeTunnelLeftY;
+			}
+            else if(mazeChar != '#' ){
             	pacman->curX++;
             	pacman->direction = RIGHT;
 			}
@@ -177,13 +192,18 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction)
     }
     else if(mazeChar == '@'){
     	pacman->score += 50;
+    	pacman->state = BUFF;
     	mazeData[pacman->curY][pacman->curX] = ' ';
+    }
+
+    if(pacman->state == BUFF){
+    	pacmanColor = GREEN;
     }
 
     if(pacman->direction != STOP){
     	uint16_t borderStartX = mazeStartX + pacman->curX * gamePixelSize;
 		uint16_t borderStartY = mazeStartY + pacman->curY * gamePixelSize;
-		LCD_DrawPacman(pacman, borderStartX, borderStartY, 9, YELLOW);
+		LCD_DrawPacman(pacman, borderStartX, borderStartY, 9, pacmanColor);
 
     	borderStartX = mazeStartX + pacman->pastX * gamePixelSize;
 		borderStartY = mazeStartY + pacman->pastY * gamePixelSize;
