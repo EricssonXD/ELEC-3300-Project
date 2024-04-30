@@ -712,6 +712,8 @@ int mazeTunnelLeftX;
 int mazeTunnelLeftY;
 int mazeTunnelRightX;
 int mazeTunnelRightY;
+int respawnX;
+int respawnY;
 void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pacman, Ghost (*ghosts)[numGhost])
 {
     uint16_t x, y;
@@ -721,7 +723,7 @@ void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pa
     uint16_t buffSize = 6;
     uint16_t wallColor = BLUE;
     pacman->score = 0;
-    uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREY};
+    uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREEN};
     pacman-> state = NORMAL;
 
     int ghostIndex = 0; // Variable to keep track of the current ghost being initialized
@@ -763,6 +765,10 @@ void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pa
             	mazeTunnelRightX = x;
             	mazeTunnelRightY = y;
 			}
+            else if (mazeChar == 'C'){
+            	respawnX = x;
+            	respawnY = y;
+            }
         }
     }
 }

@@ -81,20 +81,25 @@ void Pacman_handleKeypadInput(int timeout){
 }
 // Public Functions
 void Pacman_gameloop(){
-	uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREY};
+	uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREEN};
 	if(PACMAN_GAMEDATA.gameloopReady != 1) return;
 
+	Position ghostPositions[numGhost];
+	for(int i=0; i<numGhost; i++){
+		getAllGhostsPos(PACMAN_GAMEDATA.ghosts, ghostPositions);
+	}
+
 	// Handle input direction
-	if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection)){
+	if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection, ghostPositions)){
 	  PACMAN_GAMEDATA.prevDirection = PACMAN_GAMEDATA.inputDirection;
 	} else {
 	  // Go in original direction if cannot go in new direction
-	  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection);
+	  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection, ghostPositions);
 	}
 
 	for(int i=0; i<numGhost; i++){
-	  Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
-	  Ghost_update(currentGhost, &PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, ghostColors[i]);
+		Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
+		Ghost_update(currentGhost, &PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, ghostPositions, ghostColors[i]);
 	}
 
 	char scoreDisplay[20];
@@ -119,7 +124,7 @@ void Pacman_gamestart(){
 }
 
 
-uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction) {
+uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction, Position ghostPositions[]) {
 	uint16_t pacmanColor = YELLOW;
 
 	uint16_t curX = pacman->curX;
@@ -197,7 +202,16 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction)
     }
 
     if(pacman->state == BUFF){
-    	pacmanColor = GREEN;
+    	pacmanColor = WHITE;
+
+    	uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREEN};
+    	for (int i=0; i<numGhost; i++){
+    		if(pacman->curX == ghostPositions[i].x && pacman->curY == ghostPositions[i].y){
+    			pacman->score += 100;
+    			Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
+    			ghostReset(currentGhost, ghostColors[i]);
+    		}
+    	}
     }
 
     if(pacman->direction != STOP){

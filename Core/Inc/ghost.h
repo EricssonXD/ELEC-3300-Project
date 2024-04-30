@@ -20,6 +20,11 @@ typedef enum {
 } Direction;
 
 typedef struct {
+    uint8_t x;
+    uint8_t y;
+} Position;
+
+typedef struct {
     uint16_t curX;
     uint16_t curY;
     uint16_t pastX;
@@ -28,5 +33,8 @@ typedef struct {
 } Ghost;
 
 //void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23]);
+
+void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions);
+void ghostReset(Ghost* ghost, uint16_t color);
 
 #endif /* INC_GHOST_H_ */

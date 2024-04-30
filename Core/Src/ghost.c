@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], uint16_t color) {
+void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position ghostPositions[],  uint16_t color) {
     int curX = ghost->curX;
     int curY = ghost->curY;
     int pacX = pacman->curX;
@@ -45,13 +45,26 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], uint16_t c
 
         // Check if the next position is a valid move
         if (mazeData[nextY][nextX] != '#') {
-            validDirections[numValidDirections] = dir;
-//            numValidDirections++;
+        	//check if next position has a ghost
+        	int ghostValid = 1;
+        	for (int i=0; i<numGhost; i++){
+        		int ghostX = ghostPositions[i].x;
+        		int ghostY = ghostPositions[i].y;
 
-            float distance = sqrtf(powf(nextX - pacX, 2) + powf(nextY - pacY, 2));
-            distances[numValidDirections] = distance;
-            numValidDirections++;
+        		if(ghostX == curX && ghostY == curY){
+        			continue;
+        		}
+        		if(nextX == ghostPositions[i].x && nextY == ghostPositions[i].y){
+        			ghostValid = 0;
+        		}
+        	}
 
+        	if(ghostValid){
+				validDirections[numValidDirections] = dir;
+				float distance = sqrtf(powf(nextX - pacX, 2) + powf(nextY - pacY, 2));
+				distances[numValidDirections] = distance;
+				numValidDirections++;
+        	}
         }
     }
 
@@ -96,6 +109,28 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], uint16_t c
 
     // Update ghost display
     uint16_t borderStartX = mazeStartX + ghost->curX * gamePixelSize;
+	uint16_t borderStartY = mazeStartY + ghost->curY * gamePixelSize;
+	LCD_DrawGhost(ghost, borderStartX, borderStartY, 9, color);
+
+	borderStartX = mazeStartX + ghost->pastX * gamePixelSize;
+	borderStartY = mazeStartY + ghost->pastY * gamePixelSize;
+	LCD_DrawPixel(borderStartX, borderStartY, gamePixelSize, BLACK);
+}
+
+void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions) {
+    for (int i = 0; i < numGhost; i++) {
+        ghostPositions[i].x = ghosts[i].curX;
+        ghostPositions[i].y = ghosts[i].curY;
+    }
+}
+
+void ghostReset(Ghost* ghost, uint16_t color){
+	ghost->pastX = ghost->curX;
+	ghost->pastY = ghost->curY;
+	ghost->curX = respawnX;
+	ghost->curY = respawnY;
+
+	uint16_t borderStartX = mazeStartX + ghost->curX * gamePixelSize;
 	uint16_t borderStartY = mazeStartY + ghost->curY * gamePixelSize;
 	LCD_DrawGhost(ghost, borderStartX, borderStartY, 9, color);
 

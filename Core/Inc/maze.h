@@ -12,13 +12,13 @@ static const char MAZE1[][23] = {
 	      "#####*#****#****#*#####",
 	      "#####*####*#*####*#####",
 	      "#####*#### # ####*#####",
-	      "#####*# G       #*#####",
+	      "#####*#G       G#*#####",
 	      "#####*# ### ### #*#####",
-	      "L    *       G   *   GR",
+	      "L    *     C     *    R",
 	      "#####*# ### ### #*#####",
 	      "#####*#         #*#####",
 	      "#####*# ####### #*#####",
-	      "#####*#G####### #*#####",
+	      "#####*#G#######G#*#####",
 	      "#**********#**********#",
 	      "#*###*####*#*####*###*#",
 	      "#@**#******P******#**@#",
@@ -34,5 +34,7 @@ extern int mazeTunnelLeftX;
 extern int mazeTunnelLeftY;
 extern int mazeTunnelRightX;
 extern int mazeTunnelRightY;
+extern int respawnX;
+extern int respawnY;
 
 #endif
