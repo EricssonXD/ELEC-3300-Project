@@ -112,9 +112,16 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position g
 	uint16_t borderStartY = mazeStartY + ghost->curY * gamePixelSize;
 	LCD_DrawGhost(ghost, borderStartX, borderStartY, 9, color);
 
+	char mazeChar = mazeData[ghost->pastY][ghost->pastX];
 	borderStartX = mazeStartX + ghost->pastX * gamePixelSize;
 	borderStartY = mazeStartY + ghost->pastY * gamePixelSize;
 	LCD_DrawPixel(borderStartX, borderStartY, gamePixelSize, BLACK);
+	if(mazeChar == '*'){
+		LCD_DrawFood(borderStartX, borderStartY, 3, gamePixelSize, GREEN);
+	}
+	else if(mazeChar == '@'){
+		LCD_DrawBuff(borderStartX, borderStartY, 6, gamePixelSize, YELLOW);
+	}
 }
 
 void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions) {

@@ -32,6 +32,8 @@ typedef struct {
     Direction direction;
     uint16_t score;
     State state;
+    uint16_t speed;
+    uint16_t health;
 } Pacman;
 
 typedef struct

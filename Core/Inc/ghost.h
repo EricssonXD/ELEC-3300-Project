@@ -30,6 +30,7 @@ typedef struct {
     uint16_t pastX;
     uint16_t pastY;
     Direction direction;
+    uint16_t speed;
 } Ghost;
 
 //void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23]);
