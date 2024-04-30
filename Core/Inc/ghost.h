@@ -35,7 +35,7 @@ typedef struct {
 
 //void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23]);
 
-void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions);
+void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions, Ghost* currentGhost);
 void ghostReset(Ghost* ghost, uint16_t color);
 
 #endif /* INC_GHOST_H_ */

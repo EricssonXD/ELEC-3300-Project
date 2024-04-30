@@ -77,7 +77,23 @@ void Pacman_handleKeypadInput(int timeout){
 	  default:
 	    // code block
 	}
+}
 
+int checkWin(char (*mazeData)[23]){
+	int mazeWidth = 23;
+	int mazeHeight = 26;
+	int x, y;
+	int isWin = 1;
+	for (y = 0; y < mazeHeight; y++) {
+		for (x = 0; x < mazeWidth; x++) {
+			char mazeChar = mazeData[y][x];
+			if(mazeChar == '*'){
+				isWin = 0;
+				break;
+			}
+		}
+	}
+	return isWin;
 }
 
 uint16_t buffTimer = 20;
@@ -91,9 +107,11 @@ void Pacman_gameloop(){
 		return;
 	}
 
-	Position ghostPositions[numGhost];
+	Position ghostPositions[numGhost-1];
 	for(int i=0; i<numGhost; i++){
-		getAllGhostsPos(PACMAN_GAMEDATA.ghosts, ghostPositions);
+		Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
+		getAllGhostsPos(PACMAN_GAMEDATA.ghosts, ghostPositions, currentGhost);
+		Ghost_update(currentGhost, &PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, ghostPositions, ghostColors[i]);
 	}
 
 	// Handle input direction
@@ -104,10 +122,9 @@ void Pacman_gameloop(){
 	  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection, ghostPositions);
 	}
 
-	for(int i=0; i<numGhost; i++){
-		Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
-		Ghost_update(currentGhost, &PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, ghostPositions, ghostColors[i]);
-	}
+	char healthDisplay[20];
+	sprintf(healthDisplay, "Health: %d", PACMAN_GAMEDATA.pacman.health);
+	LCD_DrawString_Color (0, 265, healthDisplay, BLACK, YELLOW);
 
 	char scoreDisplay[20];
 	sprintf(PACMAN_GAMEDATA.scoreString, "%d", PACMAN_GAMEDATA.pacman.score);
@@ -224,7 +241,7 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
 			buffTimer--;
     	}
     	else{
-    		pacman->state == NORMAL;
+    		pacman->state = NORMAL;
     		pacmanColor = YELLOW;
     	}
     }
@@ -242,19 +259,3 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
     return 0;
 }
 
-int checkWin(char (*mazeData)[23]){
-	int mazeWidth = 23;
-	int mazeHeight = 26;
-	int x, y;
-	int isWin = 1;
-	for (y = 0; y < mazeHeight; y++) {
-		for (x = 0; x < mazeWidth; x++) {
-			char mazeChar = mazeData[y][x];
-			if(mazeChar == '*'){
-				isWin = 0;
-				break;
-			}
-		}
-	}
-	return isWin;
-}
