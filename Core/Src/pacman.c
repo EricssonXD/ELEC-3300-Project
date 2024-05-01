@@ -97,6 +97,7 @@ int checkWin(char (*mazeData)[23]){
 }
 
 uint16_t buffTimer = 20;
+uint16_t frightenedTimer = 20;
 // Public Functions
 void Pacman_gameloop(){
 	uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREEN};
@@ -107,12 +108,8 @@ void Pacman_gameloop(){
 		return;
 	}
 
-	Position ghostPositions[numGhost-1];
-	for(int i=0; i<numGhost; i++){
-		Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
-		getAllGhostsPos(PACMAN_GAMEDATA.ghosts, ghostPositions, currentGhost);
-		Ghost_update(currentGhost, &PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, ghostPositions, ghostColors[i]);
-	}
+	Position ghostPositions[numGhost];;
+	getAllGhostsPos(PACMAN_GAMEDATA.ghosts, ghostPositions);
 
 	// Handle input direction
 	if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection, ghostPositions)){
@@ -120,6 +117,13 @@ void Pacman_gameloop(){
 	} else {
 	  // Go in original direction if cannot go in new direction
 	  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection, ghostPositions);
+	}
+
+	Position ghostRelativePositions[numGhost-1];
+	for(int i=0; i<numGhost; i++){
+		Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
+		getRelativeGhostsPos(PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
+		Ghost_update(currentGhost, &PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
 	}
 
 	char healthDisplay[20];
@@ -224,6 +228,10 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
     	pacman->state = BUFF;
     	mazeData[pacman->curY][pacman->curX] = ' ';
     	buffTimer = 20;
+    	for (int i=0; i<numGhost; i++){
+    		Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
+    		currentGhost->state = FRIGHTENED;
+    	}
     }
 
     if(pacman->state == BUFF){
@@ -243,6 +251,10 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
     	else{
     		pacman->state = NORMAL;
     		pacmanColor = YELLOW;
+    		for (int i=0; i<numGhost; i++){
+				Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
+				currentGhost->state = REGULAR;
+			}
     	}
     }
 
