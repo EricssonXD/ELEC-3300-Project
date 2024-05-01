@@ -735,6 +735,7 @@ void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pa
                 LCD_DrawPixel(startX + x * gamePixelSize, startY + y * gamePixelSize, gamePixelSize, wallColor);
             }
             else if (mazeChar == 'P') { // Pacman
+            	pacman->health = 3;
                 pacman->curX = x;
                 pacman->curY = y;
                 pacman->direction = LEFT;

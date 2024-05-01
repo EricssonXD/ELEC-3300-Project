@@ -11,7 +11,19 @@
 #include <stdio.h>
 #include <string.h>
 
+uint16_t stunTimer = 40;
+int isStun = 0;
 void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position ghostPositions[],  uint16_t color) {
+	if(isStun == 1){
+		if(stunTimer > 0){
+			stunTimer--;
+			return;
+		}
+		else{
+			isStun = 0;
+		}
+	}
+
     int curX = ghost->curX;
     int curY = ghost->curY;
     int pacX = pacman->curX;
@@ -47,7 +59,7 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position g
         if (mazeData[nextY][nextX] != '#') {
         	//check if next position has a ghost
         	int ghostValid = 1;
-        	for (int i=0; i<numGhost; i++){
+        	for (int i=0; i<numGhost-1; i++){
         		int ghostX = ghostPositions[i].x;
         		int ghostY = ghostPositions[i].y;
 
@@ -107,18 +119,31 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position g
 		ghost->curY = mazeTunnelLeftY;
 	}
 
+	if (curX == pacman->curX && curY == pacman->curY){
+		pacman->health--;
+		stunTimer = 40;
+		isStun = 1;
+	}
+
     // Update ghost display
     uint16_t borderStartX = mazeStartX + ghost->curX * gamePixelSize;
 	uint16_t borderStartY = mazeStartY + ghost->curY * gamePixelSize;
 	LCD_DrawGhost(ghost, borderStartX, borderStartY, 9, color);
 
+	char mazeChar = mazeData[ghost->pastY][ghost->pastX];
 	borderStartX = mazeStartX + ghost->pastX * gamePixelSize;
 	borderStartY = mazeStartY + ghost->pastY * gamePixelSize;
 	LCD_DrawPixel(borderStartX, borderStartY, gamePixelSize, BLACK);
+	if(mazeChar == '*'){
+		LCD_DrawFood(borderStartX, borderStartY, 3, gamePixelSize, GREEN);
+	}
+	else if(mazeChar == '@'){
+		LCD_DrawBuff(borderStartX, borderStartY, 6, gamePixelSize, YELLOW);
+	}
 }
 
-void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions) {
-    for (int i = 0; i < numGhost; i++) {
+void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions, Ghost* currentGhost) {
+    for (int i = 0; i < numGhost-1; i++) {
         ghostPositions[i].x = ghosts[i].curX;
         ghostPositions[i].y = ghosts[i].curY;
     }
