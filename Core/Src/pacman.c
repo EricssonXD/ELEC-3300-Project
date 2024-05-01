@@ -16,6 +16,8 @@
 
 
 PacmanGameData PACMAN_GAMEDATA = {.gameloopReady = 0};
+MultiplayerPacmanGameData MULTI_PACMAN_GAMEDATA = {.gameloopReady = 0};
+int isMulti = 2;
 
 // Private functions
 
@@ -32,9 +34,6 @@ void startGameloopTimer(){
 void stopGameloopTimer(){
     HAL_TIM_Base_Stop_IT(&htim6);
 
-}
-void setMaze(const void * maze){
-	memcpy(PACMAN_GAMEDATA.mazeData, maze, sizeof (char) * MAZE_HEIGHT * MAZE_WIDTH);
 }
 
 void Pacman_handleInput(uint8_t input){
@@ -63,15 +62,19 @@ void Pacman_handleKeypadInput(int timeout){
 	switch (KeyPad_WaitForKeyGetChar(timeout)) {
 	  case '2':
 		PACMAN_GAMEDATA.inputDirection= UP;
+//		MULTI_PACMAN_GAMEDATA.inputDirection= UP;
 	    break;
 	  case '8':
 		PACMAN_GAMEDATA.inputDirection = DOWN;
+//		MULTI_PACMAN_GAMEDATA.inputDirection= DOWN;
 	    break;
 	  case '4':
 		PACMAN_GAMEDATA.inputDirection = LEFT;
+//		MULTI_PACMAN_GAMEDATA.inputDirection= LEFT;
 	    break;
 	  case '6':
 		PACMAN_GAMEDATA.inputDirection = RIGHT;
+//		MULTI_PACMAN_GAMEDATA.inputDirection= RIGHT;
 	    break;
 
 	  default:
@@ -107,6 +110,10 @@ void Pacman_gameloop(){
 		LCD_DrawString_Color (0, 300, "YOU WIN!", BLACK, YELLOW);
 		return;
 	}
+	if(PACMAN_GAMEDATA.pacman.health <= 0){
+		LCD_DrawString_Color (0, 300, "YOU LOSE!", BLACK, YELLOW);
+	return;
+	}
 
 	Position ghostPositions[numGhost];;
 	getAllGhostsPos(PACMAN_GAMEDATA.ghosts, ghostPositions);
@@ -137,18 +144,82 @@ void Pacman_gameloop(){
 	LCD_DrawString_Color (0, 280, scoreDisplay, BLACK, YELLOW);
 }
 
-void Pacman_gamestart(){
+void Pacman_gameloop_multi(){
+	uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREEN};
+	if(MULTI_PACMAN_GAMEDATA.gameloopReady != 1) return;
+
+
+	//CHECK WHICH PACMAN NOT YET!!!!
+//	if(checkWin(MULTI_PACMAN_GAMEDATA.mazeData) == 1){
+//		LCD_DrawString_Color (0, 300, "YOU WIN!", BLACK, YELLOW);
+//		return;
+//	}
+//	if(MULTI_PACMAN_GAMEDATA.pacman.health <= 0){
+//		LCD_DrawString_Color (0, 300, "YOU LOSE!", BLACK, YELLOW);
+//	return;
+//	}
+
+	Position ghostPositions[numGhost];;
+	getAllGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostPositions);
+
+	// Handle input direction
+//	for(int i=0; i<numPacman; i++){
+//		Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[i]);
+//		if(Pacman_update(currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, MULTI_PACMAN_GAMEDATA.inputDirection, ghostPositions)){
+//			MULTI_PACMAN_GAMEDATA.prevDirection = MULTI_PACMAN_GAMEDATA.inputDirection;
+//		} else {
+//		  // Go in original direction if cannot go in new direction
+//		  Pacman_update(currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, MULTI_PACMAN_GAMEDATA.prevDirection, ghostPositions);
+//		}
+//	}
+
+	Pacman* testPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[1]);;
+	if(Pacman_update(testPacman, MULTI_PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection, ghostPositions)){
+		PACMAN_GAMEDATA.prevDirection = PACMAN_GAMEDATA.inputDirection;
+	} else {
+	  // Go in original direction if cannot go in new direction
+	  Pacman_update(testPacman, MULTI_PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection, ghostPositions);
+	}
+
+//	Position ghostRelativePositions[numGhost-1];
+//	for(int i=0; i<numGhost; i++){
+//		Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
+//		getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
+//		Ghost_update(currentGhost, testPacman, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+//	}
+
+//	char healthDisplay[20];
+//	sprintf(healthDisplay, "Health: %d", PACMAN_GAMEDATA.pacman.health);
+//	LCD_DrawString_Color (0, 265, healthDisplay, BLACK, YELLOW);
+//
+//	char scoreDisplay[20];
+//	sprintf(PACMAN_GAMEDATA.scoreString, "%d", PACMAN_GAMEDATA.pacman.score);
+//	strcpy(scoreDisplay, "Score: ");
+//	strcat(scoreDisplay, PACMAN_GAMEDATA.scoreString);
+//	LCD_DrawString_Color (0, 280, scoreDisplay, BLACK, YELLOW);
+}
+
+void Pacman_gamestart(const void * maze, int isMulti){
 	// Make sure the gameloop timer is stopped
 	stopGameloopTimer();
 	// Starts the pacman game
-	setMaze(MAZE1);
-	LCD_Clear(0, 0, 240, 320, BLACK);
-  
-	initMaze(mazeStartX, mazeStartY, PACMAN_GAMEDATA.mazeData, &PACMAN_GAMEDATA.pacman, &PACMAN_GAMEDATA.ghosts);
+	//Single player
+	if(!isMulti){
+		memcpy(PACMAN_GAMEDATA.mazeData, maze, sizeof (char) * MAZE_HEIGHT * MAZE_WIDTH);
+		LCD_Clear(0, 0, 240, 320, BLACK);
+		initSingleMaze(mazeStartX, mazeStartY, PACMAN_GAMEDATA.mazeData, &PACMAN_GAMEDATA.pacman, &PACMAN_GAMEDATA.ghosts);
+		startGameloopTimer();
+		PACMAN_GAMEDATA.gameloopReady = 1;
+	}
+	//Multi player
+	else{
+		memcpy(MULTI_PACMAN_GAMEDATA.mazeData, maze, sizeof (char) * MAZE_HEIGHT * MAZE_WIDTH);
+		LCD_Clear(0, 0, 240, 320, BLACK);
+		initMultiMaze(mazeStartX, mazeStartY, MULTI_PACMAN_GAMEDATA.mazeData, &MULTI_PACMAN_GAMEDATA.pacmans, &PACMAN_GAMEDATA.ghosts);
+		startGameloopTimer();
+		MULTI_PACMAN_GAMEDATA.gameloopReady = 1;
+	}
 
-	// Tells the code the the game is initialized and gameloop will start to be called
-	startGameloopTimer();
-	PACMAN_GAMEDATA.gameloopReady = 1;
 }
 
 
