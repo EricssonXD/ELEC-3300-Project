@@ -45,4 +45,5 @@ void getRelativeGhostsPos(Ghost ghosts[], Position* ghostPositions, Ghost* curre
 void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions);
 void ghostReset(Ghost* ghost, uint16_t color);
 
+
 #endif /* INC_GHOST_H_ */
