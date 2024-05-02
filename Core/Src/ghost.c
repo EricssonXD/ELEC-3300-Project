@@ -81,17 +81,28 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position g
     }
 
     // Find the index of the shortest distance
-    int shortestIndex = 0;
-    float shortestDistance = distances[0];
-    for (int i = 1; i < numValidDirections; i++) {
-        if (distances[i] < shortestDistance) {
-            shortestIndex = i;
-            shortestDistance = distances[i];
-        }
+    int index = 0;
+    if(ghost->state != FRIGHTENED){
+		float shortestDistance = distances[0];
+		for (int i = 1; i < numValidDirections; i++) {
+			if (distances[i] < shortestDistance) {
+				index = i;
+				shortestDistance = distances[i];
+			}
+		}
+    }
+    else if (ghost->state == FRIGHTENED){
+    	float longestDistance = distances[0];
+		for (int i = 1; i < numValidDirections; i++) {
+			if (distances[i] > longestDistance) {
+				index = i;
+				longestDistance = distances[i];
+			}
+		}
     }
 
     //Update the ghost variables
-    Direction optimalDir = validDirections[shortestIndex];
+    Direction optimalDir = validDirections[index];
     ghost->pastX = ghost->curX;
     ghost->pastY = ghost->curY;
     ghost->direction = optimalDir;
@@ -142,11 +153,18 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position g
 	}
 }
 
-void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions, Ghost* currentGhost) {
+void getRelativeGhostsPos(Ghost ghosts[], Position* ghostPositions, Ghost* currentGhost) {
     for (int i = 0; i < numGhost-1; i++) {
         ghostPositions[i].x = ghosts[i].curX;
         ghostPositions[i].y = ghosts[i].curY;
     }
+}
+
+void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions) {
+	for (int i = 0; i < numGhost; i++) {
+		ghostPositions[i].x = ghosts[i].curX;
+		ghostPositions[i].y = ghosts[i].curY;
+	}
 }
 
 void ghostReset(Ghost* ghost, uint16_t color){

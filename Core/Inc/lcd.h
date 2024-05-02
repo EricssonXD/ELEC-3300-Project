@@ -78,6 +78,7 @@ void 			LCD_DrawPacman		( Pacman* pacman, uint16_t startX, uint16_t startY, uint
 void 			LCD_DrawFood		( uint16_t startX, uint16_t startY, uint16_t foodSize, uint16_t pixelSize, uint16_t color);
 void 			LCD_DrawBuff		( uint16_t startX, uint16_t startY, uint16_t buffSize, uint16_t pixelSize, uint16_t color);
 void 			LCD_DrawGhost		( Ghost* ghost, uint16_t startX, uint16_t startY, uint16_t size, uint16_t color);
-void 		initMaze		( uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pacman, Ghost (*ghosts)[numGhost]);
+void 			initSingleMaze		( uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pacman, Ghost (*ghosts)[numGhost]);
+void 		initMultiMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman (*pacmans)[numPacman], Ghost (*ghosts)[numGhost]);
 #endif 
 

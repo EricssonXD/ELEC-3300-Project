@@ -16,8 +16,11 @@
 #define mazeStartX	5
 #define mazeStartY	5
 #define numGhost	4
+#define numPacman	2
 #define MAZE_WIDTH 23
 #define MAZE_HEIGHT 26
+
+extern int isMulti;
 
 typedef enum {
     NORMAL,
@@ -48,10 +51,23 @@ typedef struct
 
 } PacmanGameData;
 
+typedef struct
+{
+	uint8_t gameloopReady; // Realized that this is useless after figuring out the timer, but I'll leave it here just in case
+	Pacman pacmans[numPacman];
+	Ghost ghosts[numGhost];
+	Direction prevDirection;
+	Direction inputDirection;
+	char scoreString[10];
+	char mazeData[MAZE_HEIGHT][MAZE_WIDTH];
+
+} MultiplayerPacmanGameData;
+
 
 uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction, Position ghostPositions[]);
 void Pacman_gamestart();
 void Pacman_gameloop();
+void Pacman_gameloop_multi();
 void Pacman_handleInput(uint8_t input);
 void Pacman_handleKeypadInput(int timeout);
 
