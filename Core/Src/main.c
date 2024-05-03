@@ -20,6 +20,7 @@
 #include "main.h"
 #include "dac.h"
 #include "dma.h"
+#include "i2c.h"
 #include "i2s.h"
 #include "tim.h"
 #include "usart.h"
@@ -70,7 +71,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
   */
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -101,8 +101,10 @@ int main(void)
   MX_TIM6_Init();
   MX_TIM7_Init();
   MX_I2S2_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 //  USART3_IRQHandler();
+  WM8978_Init();
   LCD_INIT();
 
   // Init WIFI

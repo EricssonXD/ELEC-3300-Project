@@ -35,7 +35,7 @@ void onReceiveData(){
 //	char* data = malloc(Espdatatype.UserRecLen);
 //	memcpy(data, Espdatatype.UserBuffer, Espdatatype.UserRecLen);
 	Pacman_handleInput(Espdatatype.UserBuffer[0]);
-//	LCD_DrawString(0, 20, "A");
+//	LCD_DrawString(0, 20, data);
 
 //	free(data);
 }
