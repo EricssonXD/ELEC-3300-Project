@@ -714,7 +714,7 @@ int mazeTunnelRightX;
 int mazeTunnelRightY;
 int respawnX;
 int respawnY;
-void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pacman, Ghost (*ghosts)[numGhost])
+void initSingleMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pacman, Ghost (*ghosts)[numGhost])
 {
     uint16_t x, y;
     int mazeWidth = 23;
@@ -741,6 +741,75 @@ void initMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman* pa
                 pacman->direction = LEFT;
                 LCD_DrawPacman(pacman, startX + x * gamePixelSize, startY + y * gamePixelSize, 9, YELLOW);
                 pacman->direction = STOP;
+            }
+            else if (mazeChar == '*') {
+            	LCD_DrawFood(startX + x * gamePixelSize, startY + y * gamePixelSize, foodSize, gamePixelSize, GREEN);
+            }
+            else if (mazeChar == '@') {
+				LCD_DrawBuff(startX + x * gamePixelSize, startY + y * gamePixelSize, buffSize, gamePixelSize, YELLOW);
+			}
+            else if (mazeChar == 'G') {
+				// Check if there are remaining ghosts to initialize
+				if (ghostIndex < numGhost) {
+					Ghost* currentGhost = &((*ghosts)[ghostIndex]);
+					currentGhost->curX = x;
+					currentGhost->curY = y;
+					LCD_DrawGhost(currentGhost, startX + x * gamePixelSize, startY + y * gamePixelSize, 9, ghostColors[ghostIndex]);
+					ghostIndex++; // Move to the next ghost
+				}
+			}
+            else if (mazeChar == 'L'){
+            	mazeTunnelLeftX = x;
+            	mazeTunnelLeftY = y;
+            }
+            else if (mazeChar == 'R'){
+            	mazeTunnelRightX = x;
+            	mazeTunnelRightY = y;
+			}
+            else if (mazeChar == 'C'){
+            	respawnX = x;
+            	respawnY = y;
+            }
+        }
+    }
+}
+
+void initMultiMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacman (*pacmans)[numPacman], Ghost (*ghosts)[numGhost])
+{
+    uint16_t x, y;
+    int mazeWidth = 23;
+    int mazeHeight = 26;
+    uint16_t foodSize = 3;
+    uint16_t buffSize = 6;
+    uint16_t wallColor = BLUE;
+    uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREEN};
+    for(int i=0; i<numPacman; i++){
+    	Pacman* currentPacman = &((*pacmans)[i]);
+    	currentPacman->score = 0;
+    	currentPacman->state = NORMAL;
+    }
+    int ghostIndex = 0; // Variable to keep track of the current ghost being initialized
+    int pacmanIndex = 0;
+
+    for (y = 0; y < mazeHeight; y++) {
+        for (x = 0; x < mazeWidth; x++) {
+            char mazeChar = mazeData[y][x];
+            if (mazeChar == '#') { // Wall
+                LCD_DrawPixel(startX + x * gamePixelSize, startY + y * gamePixelSize, gamePixelSize, wallColor);
+            }
+            else if (mazeChar == 'P') { // Pacman
+            	if (pacmanIndex < numPacman) {
+					Pacman* currentPacman = &((*pacmans)[pacmanIndex]);
+					currentPacman->health = 3;
+					currentPacman->curX = x;
+					currentPacman->curY = y;
+					currentPacman->direction = LEFT;
+					LCD_DrawPacman(currentPacman, startX + x * gamePixelSize, startY + y * gamePixelSize, 9, YELLOW);
+					currentPacman->direction = STOP;
+
+					pacmanIndex++;
+				}
+
             }
             else if (mazeChar == '*') {
             	LCD_DrawFood(startX + x * gamePixelSize, startY + y * gamePixelSize, foodSize, gamePixelSize, GREEN);

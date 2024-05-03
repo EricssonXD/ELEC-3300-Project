@@ -31,6 +31,7 @@
 /* USER CODE BEGIN Includes */
 #include "pacman.h"
 #include "keypad.h"
+#include "maze.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -128,9 +129,8 @@ int main(void)
   char numberString[4];
 
   GPIO_PinState k1 = GPIO_PIN_RESET;
+  GPIO_PinState k2 = GPIO_PIN_RESET;
   int displayReady = 2;
-
-
 
 
 //  getIP();
@@ -143,8 +143,14 @@ int main(void)
   {
 
 	  k1 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);
+	  k2 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
 	  if(k1 == GPIO_PIN_SET){
 		  displayReady = 0;
+		  isMulti = 0;
+	  }
+	  if(k2 == GPIO_PIN_SET){
+		  displayReady = 0;
+		  isMulti = 1;
 	  }
 
 	  // inital debugging screen
@@ -169,7 +175,13 @@ int main(void)
 
 
 	  if(displayReady == 0){
-		  Pacman_gamestart();
+		  if(!isMulti){
+			  Pacman_gamestart(MAZE1, isMulti);
+		  }
+		  else{
+			  Pacman_gamestart(MAZE2, isMulti);
+		  }
+
 		  displayReady = 1;
 	  }
 

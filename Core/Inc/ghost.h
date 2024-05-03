@@ -19,6 +19,11 @@ typedef enum {
 	STOP
 } Direction;
 
+typedef enum {
+    REGULAR,
+	FRIGHTENED,
+} GhostState;
+
 typedef struct {
     uint8_t x;
     uint8_t y;
@@ -31,11 +36,13 @@ typedef struct {
     uint16_t pastY;
     Direction direction;
     uint16_t speed;
+    GhostState state;
 } Ghost;
 
 //void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23]);
 
-void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions, Ghost* currentGhost);
+void getRelativeGhostsPos(Ghost ghosts[], Position* ghostPositions, Ghost* currentGhost);
+void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions);
 void ghostReset(Ghost* ghost, uint16_t color);
 
 
