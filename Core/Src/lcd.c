@@ -800,7 +800,7 @@ void initMultiMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacma
             else if (mazeChar == 'P') { // Pacman
             	if (pacmanIndex < numPacman) {
 					Pacman* currentPacman = &((*pacmans)[pacmanIndex]);
-					currentPacman->health = 3;
+					currentPacman->health = 1;
 					currentPacman->curX = x;
 					currentPacman->curY = y;
 					currentPacman->direction = LEFT;
