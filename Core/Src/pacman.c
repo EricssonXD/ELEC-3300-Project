@@ -226,7 +226,31 @@ void Pacman_gameloop_multi(){
 		char winDisplay[20];
 		LCD_Clear(0,0,LCD_Default_Max_COLUMN, LCD_Default_Max_PAGE, BLACK);
 		sprintf(winDisplay, "Pacman %d Won!", playerId + 1);
-		LCD_DrawString_Color (0, 279, winDisplay, BLACK, YELLOW);
+		LCD_DrawString_Color (100, 140, winDisplay, BLACK, YELLOW);
+		char scoreDisplay[20];
+
+		// Pacman1 Stats display
+		if(Pacman1->joined){
+		sprintf(scoreDisplay, "P1: %d", Pacman1->score);
+		LCD_DrawString_Color (0, 265, scoreDisplay, BLACK, YELLOW);
+		memset(scoreDisplay, 0, sizeof(scoreDisplay));
+
+		}
+		if(Pacman2->joined){
+		sprintf(scoreDisplay, "P2: %d", Pacman2->score);
+		LCD_DrawString_Color (150, 265, scoreDisplay, BLACK, YELLOW);
+		memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		}
+		if(Pacman3->joined){
+		sprintf(scoreDisplay, "P3: %d", Pacman3->score);
+		LCD_DrawString_Color (0, 295, scoreDisplay, BLACK, YELLOW);
+		memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		}
+		if(Pacman4->joined){
+		sprintf(scoreDisplay, "P4: %d", Pacman4->score);
+		LCD_DrawString_Color (150, 295, scoreDisplay, BLACK, YELLOW);
+		memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		}
 		return;
 	}
 
@@ -280,6 +304,9 @@ void Pacman_gameloop_multi(){
 	else if(numPacmanLeft == 2){
 		Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
 		Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
+	if(ghostUpdate){
+		ghostUpdate = 0;
+		Position ghostRelativePositions[numGhost-1];
 		for(int i=0; i<numGhost; i++){
 			Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
 			getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
@@ -330,28 +357,34 @@ void Pacman_gameloop_multi(){
 				Ghost_update(currentPacman4, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
 			}
 		}
+	} else {
+		ghostUpdate = 1;
 	}
-
-	char healthDisplay[20];
 	char scoreDisplay[20];
 
-	LCD_DrawString_Color (0, 265, "P1", BLACK, YELLOW);
-	LCD_DrawString_Color (150, 265, "P2", BLACK, YELLOW);
-	// Pacman1 Stats display
-	sprintf(healthDisplay, "Health: %d", Pacman1->health);
-	LCD_DrawString_Color (0, 279, healthDisplay, BLACK, YELLOW);
-	sprintf(MULTI_PACMAN_GAMEDATA.scoreString, "%d", Pacman1->score);
-	strcpy(scoreDisplay, "Score: ");
-	strcat(scoreDisplay, MULTI_PACMAN_GAMEDATA.scoreString);
-	LCD_DrawString_Color (0, 292, scoreDisplay, BLACK, YELLOW);
 
-	// Pacman2 Stats display
-	sprintf(healthDisplay, "Health: %d", Pacman2->health);
-	LCD_DrawString_Color (150, 279, healthDisplay, BLACK, YELLOW);
-	sprintf(MULTI_PACMAN_GAMEDATA.scoreString, "%d", Pacman2->score);
-	strcpy(scoreDisplay, "Score: ");
-	strcat(scoreDisplay, MULTI_PACMAN_GAMEDATA.scoreString);
-	LCD_DrawString_Color (150, 292, scoreDisplay, BLACK, YELLOW);
+	// Pacman1 Stats display
+	if(Pacman1->joined){
+	sprintf(scoreDisplay, "P1: %d", Pacman1->score);
+	LCD_DrawString_Color (0, 265, scoreDisplay, BLACK, YELLOW);
+	memset(scoreDisplay, 0, sizeof(scoreDisplay));
+
+	}
+	if(Pacman2->joined){
+	sprintf(scoreDisplay, "P2: %d", Pacman2->score);
+	LCD_DrawString_Color (150, 265, scoreDisplay, BLACK, YELLOW);
+	memset(scoreDisplay, 0, sizeof(scoreDisplay));
+	}
+	if(Pacman3->joined){
+	sprintf(scoreDisplay, "P3: %d", Pacman3->score);
+	LCD_DrawString_Color (0, 295, scoreDisplay, BLACK, YELLOW);
+	memset(scoreDisplay, 0, sizeof(scoreDisplay));
+	}
+	if(Pacman4->joined){
+	sprintf(scoreDisplay, "P4: %d", Pacman4->score);
+	LCD_DrawString_Color (150, 295, scoreDisplay, BLACK, YELLOW);
+	memset(scoreDisplay, 0, sizeof(scoreDisplay));
+	}
 }
 
 void Pacman_gamestart(const void * maze, int isMulti){
