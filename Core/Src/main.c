@@ -75,6 +75,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -196,7 +197,7 @@ int main(void)
 			  Pacman_gamestart(MAZE1, isMulti);
 		  }
 		  else{
-			  Pacman_gamestart(MAZE2, isMulti);
+			  Pacman_gamestart(MAZE4, isMulti);
 		  }
 
 		  displayReady = 1;

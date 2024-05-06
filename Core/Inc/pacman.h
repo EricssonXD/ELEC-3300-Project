@@ -25,6 +25,7 @@ extern int isMulti;
 typedef enum {
     NORMAL,
     BUFF,
+	DEATH,
 } State;
 
 typedef struct {

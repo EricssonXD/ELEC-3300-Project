@@ -130,6 +130,7 @@ int checkWin(char (*mazeData)[23]){
 	return isWin;
 }
 
+
 uint16_t buffTimer = 20;
 uint16_t frightenedTimer = 20;
 // Public Functions
@@ -200,6 +201,17 @@ void Pacman_gameloop_multi(){
 	Pacman* Pacman3 = &(MULTI_PACMAN_GAMEDATA.pacmans[2]);
 	Pacman* Pacman4 = &(MULTI_PACMAN_GAMEDATA.pacmans[3]);
 
+	for(int i=0; i<numPacman; i++){
+		Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[i]);
+		if(currentPacman->joined){
+			if(currentPacman->health <= 0){
+				currentPacman->curX = 99;
+				currentPacman->curY = 99;
+				currentPacman->state = DEATH;
+			}
+		}
+	}
+
 
 	if(checkWin(MULTI_PACMAN_GAMEDATA.mazeData) == 1){
 		stopGameloopTimer();
@@ -257,6 +269,41 @@ void Pacman_gameloop_multi(){
 			}
 		}
 	}
+
+//	Position ghostRelativePositions[numGhost-1];
+//	for(int i=0; i<numGhost; i++){
+//		Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
+//		getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
+//		if(i<2){
+//			Ghost_update(currentGhost, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+//		}
+//		else{
+//			Ghost_update(currentGhost, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+//		}
+//	}
+
+	int numPacmanLeft = 0;
+	int pacmanLeftIndex[numPacman];
+	for(int i=0; i<numPacman; i++){
+		Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[i]);
+		if(currentPacman->health > 0){
+			pacmanLeftIndex[numPacmanLeft] = i;
+			numPacmanLeft++;
+		}
+	}
+
+	Position ghostRelativePositions[numGhost-1];
+	if(numPacmanLeft == 1){
+		Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
+		for(int i=0; i<numGhost; i++){
+			Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
+			getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
+			Ghost_update(currentGhost, currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+		}
+	}
+	else if(numPacmanLeft == 2){
+		Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
+		Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
 	if(ghostUpdate){
 		ghostUpdate = 0;
 		Position ghostRelativePositions[numGhost-1];
@@ -268,6 +315,46 @@ void Pacman_gameloop_multi(){
 			}
 			else{
 				Ghost_update(currentGhost, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+			}
+		}
+	}
+	else if(numPacmanLeft == 3){
+		Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
+		Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
+		Pacman* currentPacman3 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[2]]);
+		for(int i=0; i<numGhost; i++){
+			Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
+			getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
+			if(i==1){
+				Ghost_update(currentPacman1, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+			}
+			else if(i==2){
+				Ghost_update(currentPacman2, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+			}
+			else{
+				Ghost_update(currentPacman3, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+			}
+		}
+	}
+	else if(numPacmanLeft == 4){
+		Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
+		Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
+		Pacman* currentPacman3 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[2]]);
+		Pacman* currentPacman4 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[2]]);
+		for(int i=0; i<numGhost; i++){
+			Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
+			getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
+			if(i==1){
+				Ghost_update(currentPacman1, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+			}
+			else if(i==2){
+				Ghost_update(currentPacman2, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+			}
+			else if(i==3){
+				Ghost_update(currentPacman3, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+			}
+			else{
+				Ghost_update(currentPacman4, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
 			}
 		}
 	} else {
@@ -325,6 +412,10 @@ void Pacman_gamestart(const void * maze, int isMulti){
 
 
 uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction, Position ghostPositions[]) {
+	if(pacman->state == DEATH){
+		return 0;
+	}
+
 	uint16_t pacmanColor = YELLOW;
 
 	uint16_t curX = pacman->curX;
