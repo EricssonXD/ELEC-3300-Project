@@ -130,6 +130,19 @@ int checkWin(char (*mazeData)[23]){
 	return isWin;
 }
 
+uint8_t checkDead(){
+	uint8_t alldead = 1;
+
+	for (int i = 0; i<4; i++){
+		if(MULTI_PACMAN_GAMEDATA.pacmans[i].joined){
+			if(MULTI_PACMAN_GAMEDATA.pacmans[i].state != DEATH){
+				alldead = 0;
+			}
+		}
+	}
+
+	return alldead;
+}
 
 uint16_t buffTimer = 20;
 uint16_t frightenedTimer = 20;
@@ -213,23 +226,33 @@ void Pacman_gameloop_multi(){
 	}
 
 
-	if(checkWin(MULTI_PACMAN_GAMEDATA.mazeData) == 1){
+	if(checkWin(MULTI_PACMAN_GAMEDATA.mazeData) == 1 || checkDead()){
 		stopGameloopTimer();
 		int playerId = -1;
-		int maxScore = -1;
+		int maxScore = 0;
 		for(int i=0; i<numPacman; i++){
-			if(maxScore < MULTI_PACMAN_GAMEDATA.pacmans[i].score){
-				playerId = i;
-				maxScore = MULTI_PACMAN_GAMEDATA.pacmans[i].score;
+			if(MULTI_PACMAN_GAMEDATA.pacmans[i].joined){
+				if(maxScore < MULTI_PACMAN_GAMEDATA.pacmans[i].score){
+					playerId = i;
+					maxScore = MULTI_PACMAN_GAMEDATA.pacmans[i].score;
+				}
 			}
 		}
+
 		char winDisplay[20];
 		LCD_Clear(0,0,LCD_Default_Max_COLUMN, LCD_Default_Max_PAGE, BLACK);
+		if(playerId == -1){
+			// If all 0 points
+			LCD_DrawString_Color (75, 140, "It's a Draw!", BLACK, YELLOW);
+
+		} else {
+
 		sprintf(winDisplay, "Pacman %d Won!", playerId + 1);
-		LCD_DrawString_Color (100, 140, winDisplay, BLACK, YELLOW);
-		char scoreDisplay[20];
+		LCD_DrawString_Color (75, 140, winDisplay, BLACK, YELLOW);
+		}
 
 		// Pacman1 Stats display
+		char scoreDisplay[20];
 		if(Pacman1->joined){
 		sprintf(scoreDisplay, "P1: %d", Pacman1->score);
 		LCD_DrawString_Color (0, 265, scoreDisplay, BLACK, YELLOW);
@@ -350,7 +373,6 @@ void Pacman_gameloop_multi(){
 		ghostUpdate = 1;
 	}
 
-	char healthDisplay[20];
 	char scoreDisplay[20];
 
 	// Pacman1 Stats display
@@ -473,7 +495,6 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
         	break;
 
     }
-    	mazeData[pacman->curY ][pacman->curX] = 'P';
 
 
     mazeChar = mazeData[pacman->curY][pacman->curX];
@@ -515,6 +536,7 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
 			}
     	}
     }
+    	mazeData[pacman->curY ][pacman->curX] = 'P';
 
     if(pacman->direction != STOP){
     	uint16_t borderStartX = mazeStartX + pacman->curX * gamePixelSize;
