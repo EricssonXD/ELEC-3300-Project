@@ -130,10 +130,15 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position g
 		ghost->curY = mazeTunnelLeftY;
 	}
 
-	if (curX == pacman->curX && curY == pacman->curY){
-		pacman->health--;
-		stunTimer = 20;
-		isStun = 1;
+	for(int i=0; i<numPacman; i++){
+		Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[i]);
+		if(currentPacman->joined){
+			if (curX == currentPacman->curX && curY == currentPacman->curY){
+				pacman->health--;
+				stunTimer = 20;
+				isStun = 1;
+			}
+		}
 	}
 
     // Update ghost display
