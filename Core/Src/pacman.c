@@ -173,11 +173,11 @@ void Pacman_gameloop(){
 	getAllGhostsPos(PACMAN_GAMEDATA.ghosts, ghostPositions);
 
 	// Handle input direction
-	if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection, ghostPositions)){
+	if(Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection, ghostPositions, YELLOW)){
 	  PACMAN_GAMEDATA.prevDirection = PACMAN_GAMEDATA.inputDirection;
 	} else {
 	  // Go in original direction if cannot go in new direction
-	  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection, ghostPositions);
+	  Pacman_update(&PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection, ghostPositions, YELLOW);
 	}
 
 	Position ghostRelativePositions[numGhost-1];
@@ -207,6 +207,7 @@ void Pacman_gameloop(){
 
 void Pacman_gameloop_multi(){
 	uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREEN};
+	uint16_t pacmanColors[numPacman] = {YELLOW, CYAN, MAGENTA, GREEN};
 	if(MULTI_PACMAN_GAMEDATA.gameloopReady != 1) return;
 
 	Pacman* Pacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[0]);
@@ -283,12 +284,13 @@ void Pacman_gameloop_multi(){
 	// Handle input direction
 	for(int i=0; i<numPacman; i++){
 		Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[i]);
+		uint16_t pacColor = pacmanColors[i];
 		if(currentPacman->joined){
-			if(Pacman_update(currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, currentPacman->inputDirection, ghostPositions)){
+			if(Pacman_update(currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, currentPacman->inputDirection, ghostPositions, pacColor)){
 				currentPacman->prevDirection = currentPacman->inputDirection;
 			} else {
 			  // Go in original direction if cannot go in new direction
-			  Pacman_update(currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, currentPacman->prevDirection, ghostPositions);
+			  Pacman_update(currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, currentPacman->prevDirection, ghostPositions, pacColor);
 			}
 		}
 	}
@@ -442,12 +444,12 @@ void Pacman_gamestart(const void * maze, int isMulti){
 }
 
 
-uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction, Position ghostPositions[]) {
+uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction, Position ghostPositions[], uint16_t color) {
 	if(pacman->state == DEATH){
 		return 0;
 	}
 
-	uint16_t pacmanColor = YELLOW;
+	uint16_t pacmanColor = color;
 
 	uint16_t curX = pacman->curX;
 	uint16_t curY = pacman->curY;

@@ -67,7 +67,7 @@ typedef struct
 } MultiplayerPacmanGameData;
 
 
-uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction, Position ghostPositions[]);
+uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction, Position ghostPositions[], uint16_t color);
 void Pacman_gamestart();
 void Pacman_handle_gameloop();
 void Pacman_gameloop();
