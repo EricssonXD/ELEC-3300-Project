@@ -215,6 +215,7 @@ void Pacman_gameloop_multi(){
 		LCD_Clear(0,0,LCD_Default_Max_COLUMN, LCD_Default_Max_PAGE, BLACK);
 		sprintf(winDisplay, "Pacman %d Won!", playerId + 1);
 		LCD_DrawString_Color (100, 140, winDisplay, BLACK, YELLOW);
+		char scoreDisplay[20];
 
 		// Pacman1 Stats display
 		if(Pacman1->joined){
