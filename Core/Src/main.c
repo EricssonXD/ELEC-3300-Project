@@ -151,6 +151,7 @@ int main(void)
 //	  k2 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
 
 	  if(k1 == GPIO_PIN_SET){
+		  displayReady = -1;
 		  HAL_TIM_Base_Stop_IT(&htim6);
 		  ShowMainMenu();
 		  while(1){

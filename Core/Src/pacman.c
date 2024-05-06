@@ -40,7 +40,7 @@ void Pacman_handleInput(uint8_t player, uint8_t input){
 	if(isMulti == 1){
 		switch (input) {
 		  case 0:
-			 MULTI_PACMAN_GAMEDATA.pacmans[player].inputDirection = UP;
+			  MULTI_PACMAN_GAMEDATA.pacmans[player].inputDirection = UP;
 		    break;
 		  case 1:
 			  MULTI_PACMAN_GAMEDATA.pacmans[player].inputDirection  = DOWN;
@@ -51,13 +51,8 @@ void Pacman_handleInput(uint8_t player, uint8_t input){
 		  case 3:
 			  MULTI_PACMAN_GAMEDATA.pacmans[player].inputDirection  = RIGHT;
 		    break;
-
-		  default:
-		    // code block
 		}
-		return;
-	}
-
+	} else {
 	switch (input) {
 	  case 0:
 		PACMAN_GAMEDATA.inputDirection= UP;
@@ -71,9 +66,7 @@ void Pacman_handleInput(uint8_t player, uint8_t input){
 	  case 3:
 		PACMAN_GAMEDATA.inputDirection = RIGHT;
 	    break;
-
-	  default:
-	    // code block
+	}
 	}
 
 }
@@ -82,45 +75,41 @@ void Pacman_handleKeypadInput(int timeout){
 
 	if(isMulti == 1){
 		switch (KeyPad_WaitForKeyGetChar(timeout)) {
-		  case 0:
+		  case '2':
 			 MULTI_PACMAN_GAMEDATA.pacmans[0].inputDirection = UP;
 		    break;
-		  case 1:
+		  case '8':
 			  MULTI_PACMAN_GAMEDATA.pacmans[0].inputDirection  = DOWN;
 		    break;
-		  case 2:
+		  case '4':
 			  MULTI_PACMAN_GAMEDATA.pacmans[0].inputDirection  = LEFT;
 		    break;
-		  case 3:
+		  case '6':
 			  MULTI_PACMAN_GAMEDATA.pacmans[0].inputDirection  = RIGHT;
 		    break;
 
-		  default:
-		    // code block
 		}
-		return;
-	}
+	} else {
+
 
 	switch (KeyPad_WaitForKeyGetChar(timeout)) {
 	  case '2':
 		PACMAN_GAMEDATA.inputDirection= UP;
-//		MULTI_PACMAN_GAMEDATA.inputDirection= UP;
 	    break;
 	  case '8':
 		PACMAN_GAMEDATA.inputDirection = DOWN;
-//		MULTI_PACMAN_GAMEDATA.inputDirection= DOWN;
 	    break;
 	  case '4':
 		PACMAN_GAMEDATA.inputDirection = LEFT;
-//		MULTI_PACMAN_GAMEDATA.inputDirection= LEFT;
 	    break;
 	  case '6':
 		PACMAN_GAMEDATA.inputDirection = RIGHT;
-//		MULTI_PACMAN_GAMEDATA.inputDirection= RIGHT;
 	    break;
 
 	  default:
 	    // code block
+		  break;
+	}
 	}
 }
 
