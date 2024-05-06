@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-uint16_t stunTimer = 40;
+uint16_t stunTimer = 20;
 int isStun = 0;
 void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position ghostPositions[],  uint16_t color) {
 	if(isStun == 1){
@@ -132,7 +132,7 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position g
 
 	if (curX == pacman->curX && curY == pacman->curY){
 		pacman->health--;
-		stunTimer = 40;
+		stunTimer = 20;
 		isStun = 1;
 	}
 
