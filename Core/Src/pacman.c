@@ -16,9 +16,9 @@
 
 
 PacmanGameData PACMAN_GAMEDATA = {.gameloopReady = 0};
-MultiplayerPacmanGameData MULTI_PACMAN_GAMEDATA = {.gameloopReady = 0};
+MultiplayerPacmanGameData MULTI_PACMAN_GAMEDATA = {.gameloopReady = 0, .playerNum = 1};
 int isMulti = 2;
-
+int ghostUpdate = 0;
 // Private functions
 
 /*
@@ -36,7 +36,28 @@ void stopGameloopTimer(){
 
 }
 
-void Pacman_handleInput(uint8_t input){
+void Pacman_handleInput(uint8_t player, uint8_t input){
+	if(isMulti == 1){
+		switch (input) {
+		  case 0:
+			 MULTI_PACMAN_GAMEDATA.pacmans[player].inputDirection = UP;
+		    break;
+		  case 1:
+			  MULTI_PACMAN_GAMEDATA.pacmans[player].inputDirection  = DOWN;
+		    break;
+		  case 2:
+			  MULTI_PACMAN_GAMEDATA.pacmans[player].inputDirection  = LEFT;
+		    break;
+		  case 3:
+			  MULTI_PACMAN_GAMEDATA.pacmans[player].inputDirection  = RIGHT;
+		    break;
+
+		  default:
+		    // code block
+		}
+		return;
+	}
+
 	switch (input) {
 	  case 0:
 		PACMAN_GAMEDATA.inputDirection= UP;
@@ -58,6 +79,27 @@ void Pacman_handleInput(uint8_t input){
 }
 
 void Pacman_handleKeypadInput(int timeout){
+
+	if(isMulti == 1){
+		switch (KeyPad_WaitForKeyGetChar(timeout)) {
+		  case 0:
+			 MULTI_PACMAN_GAMEDATA.pacmans[0].inputDirection = UP;
+		    break;
+		  case 1:
+			  MULTI_PACMAN_GAMEDATA.pacmans[0].inputDirection  = DOWN;
+		    break;
+		  case 2:
+			  MULTI_PACMAN_GAMEDATA.pacmans[0].inputDirection  = LEFT;
+		    break;
+		  case 3:
+			  MULTI_PACMAN_GAMEDATA.pacmans[0].inputDirection  = RIGHT;
+		    break;
+
+		  default:
+		    // code block
+		}
+		return;
+	}
 
 	switch (KeyPad_WaitForKeyGetChar(timeout)) {
 	  case '2':
@@ -102,6 +144,15 @@ int checkWin(char (*mazeData)[23]){
 uint16_t buffTimer = 20;
 uint16_t frightenedTimer = 20;
 // Public Functions
+void Pacman_handle_gameloop(){
+	if(isMulti == 0){
+		Pacman_gameloop();
+	}
+	else if(isMulti == 1){
+		Pacman_gameloop_multi();
+	}
+}
+
 void Pacman_gameloop(){
 	uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREEN};
 	if(PACMAN_GAMEDATA.gameloopReady != 1) return;
@@ -127,10 +178,16 @@ void Pacman_gameloop(){
 	}
 
 	Position ghostRelativePositions[numGhost-1];
+	if(ghostUpdate == 1){
+
 	for(int i=0; i<numGhost; i++){
 		Ghost* currentGhost = &(PACMAN_GAMEDATA.ghosts[i]);
 		getRelativeGhostsPos(PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
 		Ghost_update(currentGhost, &PACMAN_GAMEDATA.pacman, PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+	}
+		ghostUpdate = 0;
+	} else {
+		ghostUpdate = 1;
 	}
 
 
@@ -151,29 +208,24 @@ void Pacman_gameloop_multi(){
 
 	Pacman* Pacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[0]);
 	Pacman* Pacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[1]);
+	Pacman* Pacman3 = &(MULTI_PACMAN_GAMEDATA.pacmans[2]);
+	Pacman* Pacman4 = &(MULTI_PACMAN_GAMEDATA.pacmans[3]);
 
-	LCD_DrawString_Color (0, 265, "Pacman 1", BLACK, YELLOW);
-	LCD_DrawString_Color (150, 265, "Pacman 2", BLACK, YELLOW);
 
 	if(checkWin(MULTI_PACMAN_GAMEDATA.mazeData) == 1){
-		if(Pacman1->score > Pacman2->score){
-			LCD_DrawString_Color (0, 304, "YOU WIN!", BLACK, YELLOW);
-			LCD_DrawString_Color (150, 304, "YOU LOSE!", BLACK, YELLOW);
+		stopGameloopTimer();
+		int playerId = -1;
+		int maxScore = -1;
+		for(int i=0; i<numPacman; i++){
+			if(maxScore < MULTI_PACMAN_GAMEDATA.pacmans[i].score){
+				playerId = i;
+				maxScore = MULTI_PACMAN_GAMEDATA.pacmans[i].score;
+			}
 		}
-		else{
-			LCD_DrawString_Color (0, 304, "YOU LOSE!", BLACK, YELLOW);
-			LCD_DrawString_Color (150, 304, "YOU WIN!", BLACK, YELLOW);
-		}
-		return;
-	}
-	if(Pacman1->health <= 0){
-		LCD_DrawString_Color (0, 304, "YOU LOSE!", BLACK, YELLOW);
-		LCD_DrawString_Color (150, 304, "YOU WIN!", BLACK, YELLOW);
-		return;
-	}
-	if(Pacman2->health <= 0){
-		LCD_DrawString_Color (0, 304, "YOU WIN!", BLACK, YELLOW);
-		LCD_DrawString_Color (150, 304, "YOU LOSE!", BLACK, YELLOW);
+		char winDisplay[20];
+		LCD_Clear(0,0,LCD_Default_Max_COLUMN, LCD_Default_Max_PAGE, BLACK);
+		sprintf(winDisplay, "Pacman %d Won!", playerId + 1);
+		LCD_DrawString_Color (0, 279, winDisplay, BLACK, YELLOW);
 		return;
 	}
 
@@ -181,21 +233,16 @@ void Pacman_gameloop_multi(){
 	getAllGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostPositions);
 
 	// Handle input direction
-//	for(int i=0; i<numPacman; i++){
-//		Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[i]);
-//		if(Pacman_update(currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, MULTI_PACMAN_GAMEDATA.inputDirection, ghostPositions)){
-//			MULTI_PACMAN_GAMEDATA.prevDirection = MULTI_PACMAN_GAMEDATA.inputDirection;
-//		} else {
-//		  // Go in original direction if cannot go in new direction
-//		  Pacman_update(currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, MULTI_PACMAN_GAMEDATA.prevDirection, ghostPositions);
-//		}
-//	}
-	//delete after testing
-	if(Pacman_update(Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.inputDirection, ghostPositions)){
-		PACMAN_GAMEDATA.prevDirection = PACMAN_GAMEDATA.inputDirection;
-	} else {
-	  // Go in original direction if cannot go in new direction
-	  Pacman_update(Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, PACMAN_GAMEDATA.prevDirection, ghostPositions);
+	for(int i=0; i<numPacman; i++){
+		Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[i]);
+		if(currentPacman->joined){
+			if(Pacman_update(currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, currentPacman->inputDirection, ghostPositions)){
+				currentPacman->prevDirection = currentPacman->inputDirection;
+			} else {
+			  // Go in original direction if cannot go in new direction
+			  Pacman_update(currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, currentPacman->prevDirection, ghostPositions);
+			}
+		}
 	}
 
 	Position ghostRelativePositions[numGhost-1];
@@ -213,6 +260,8 @@ void Pacman_gameloop_multi(){
 	char healthDisplay[20];
 	char scoreDisplay[20];
 
+	LCD_DrawString_Color (0, 265, "P1", BLACK, YELLOW);
+	LCD_DrawString_Color (150, 265, "P2", BLACK, YELLOW);
 	// Pacman1 Stats display
 	sprintf(healthDisplay, "Health: %d", Pacman1->health);
 	LCD_DrawString_Color (0, 279, healthDisplay, BLACK, YELLOW);

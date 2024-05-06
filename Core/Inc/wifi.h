@@ -88,6 +88,7 @@ typedef struct
 	uint8_t  DMARecBuffer[DMA_REC_SIZE];  //DMAbuffer
 	uint8_t  UserBuffer[USER_BUFF_SIZE];         // �û����ݴ���buffer
 	uint8_t  AtBuffer[AT_BUFF_SIZE];				// ATָ�����ݴ���buffer
+	uint8_t  UserIPBuffer[4];
 }Userdatatype;
 
 //typedef enum {FALSE = 0,TRUE = 1} bool;

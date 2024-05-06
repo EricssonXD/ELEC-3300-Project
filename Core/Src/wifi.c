@@ -34,7 +34,8 @@ void onReceiveData(){
 
 //	char* data = malloc(Espdatatype.UserRecLen);
 //	memcpy(data, Espdatatype.UserBuffer, Espdatatype.UserRecLen);
-	Pacman_handleInput(Espdatatype.UserBuffer[0]);
+
+	Pacman_handleInput(Espdatatype.UserBuffer[0], Espdatatype.UserBuffer[1]);
 //	LCD_DrawString(0, 20, data);
 
 //	free(data);
@@ -370,6 +371,8 @@ uint8_t wifiStart(void) {
 // When ESP8266 receives data, this will be called
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+
+//	Espdatatype.UserIPBuffer;
 	// Find "+IPD"
 	char *addr = strstr((char *)Espdatatype.DMARecBuffer,"+IPD");
 	uint16_t data_len=0;

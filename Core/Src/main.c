@@ -32,6 +32,9 @@
 #include "pacman.h"
 #include "keypad.h"
 #include "maze.h"
+#include "speaker.h"
+#include "main_menu.h"
+//#include "pacman_death_sound.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -105,7 +108,7 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 //  USART3_IRQHandler();
-  WM8978_Init();
+//  WM8978_Init();
   LCD_INIT();
 
   // Init WIFI
@@ -123,13 +126,15 @@ int main(void)
   KeyPad_Init();
   LCD_DrawString(0, 40, "Keypad Initialized");
 
-
+//  WM8978_PlayChar(Pacman_death_sound_wav);
+  LCD_DrawString(40, 240, "Press K1 to continue");
 
   int number = 0;
   char numberString[4];
+  char keypadResult;
 
   GPIO_PinState k1 = GPIO_PIN_RESET;
-  GPIO_PinState k2 = GPIO_PIN_RESET;
+//  GPIO_PinState k2 = GPIO_PIN_RESET;
   int displayReady = 2;
 
 
@@ -143,20 +148,31 @@ int main(void)
   {
 
 	  k1 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);
-	  k2 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
+//	  k2 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
+
 	  if(k1 == GPIO_PIN_SET){
-		  displayReady = 0;
-		  isMulti = 0;
-	  }
-	  if(k2 == GPIO_PIN_SET){
-		  displayReady = 0;
-		  isMulti = 1;
+		  HAL_TIM_Base_Stop_IT(&htim6);
+		  ShowMainMenu();
+		  while(1){
+			  k1 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);
+			  keypadResult = KeyPad_WaitForKeyGetChar(100);
+			  if(k1 == GPIO_PIN_SET) keypadResult = 'S';
+			  if(MenuHandleInput(keypadResult) == 1){
+				  if(MULTI_PACMAN_GAMEDATA.playerNum > 1){
+					  isMulti = 1;
+				  } else {
+					  isMulti = 0;
+				  }
+				  displayReady = 0;
+				  break;
+			  }
+		  }
 	  }
 
 	  // inital debugging screen
 	  if(displayReady == 2) {
 	   continue;
-	   char keypadResult = KeyPad_WaitForKeyGetChar(100);
+	   keypadResult = KeyPad_WaitForKeyGetChar(100);
 	   if(keypadResult == '1'){
 
 		   LCD_DrawChar(0, 100, 'G');

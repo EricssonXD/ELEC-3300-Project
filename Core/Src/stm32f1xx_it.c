@@ -52,7 +52,7 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern int isMulti;
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -269,12 +269,7 @@ void USART3_IRQHandler(void)
 void TIM6_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_IRQn 0 */
-	if(isMulti == 0){
-		Pacman_gameloop();
-	}
-	else if(isMulti == 1){
-		Pacman_gameloop_multi();
-	}
+  Pacman_handle_gameloop();
 
   /* USER CODE END TIM6_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);

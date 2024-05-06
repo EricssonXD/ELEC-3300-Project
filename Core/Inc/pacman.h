@@ -16,7 +16,7 @@
 #define mazeStartX	5
 #define mazeStartY	5
 #define numGhost	4
-#define numPacman	2
+#define numPacman	4
 #define MAZE_WIDTH 23
 #define MAZE_HEIGHT 26
 
@@ -37,6 +37,9 @@ typedef struct {
     State state;
     uint16_t speed;
     uint16_t health;
+	Direction prevDirection;
+	Direction inputDirection;
+	uint8_t joined;
 } Pacman;
 
 typedef struct
@@ -56,8 +59,7 @@ typedef struct
 	uint8_t gameloopReady; // Realized that this is useless after figuring out the timer, but I'll leave it here just in case
 	Pacman pacmans[numPacman];
 	Ghost ghosts[numGhost];
-	Direction prevDirection;
-	Direction inputDirection;
+	uint8_t playerNum;
 	char scoreString[10];
 	char mazeData[MAZE_HEIGHT][MAZE_WIDTH];
 
@@ -66,9 +68,12 @@ typedef struct
 
 uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction, Position ghostPositions[]);
 void Pacman_gamestart();
+void Pacman_handle_gameloop();
 void Pacman_gameloop();
 void Pacman_gameloop_multi();
-void Pacman_handleInput(uint8_t input);
+void Pacman_handleInput(uint8_t player, uint8_t input);
 void Pacman_handleKeypadInput(int timeout);
+
+extern MultiplayerPacmanGameData MULTI_PACMAN_GAMEDATA;
 
 #endif /* INC_PACMAN_H_ */

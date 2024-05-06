@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include "i2s.h"
-#include "i2c.h"
+#include "speaker.h"
 //#include "datas.h"
 
 #define	WM8978_ADDRESS				0x1A
@@ -32,7 +27,7 @@ void WM8978_Init(void)
 	WM8978_Register_Wirter(55,30|(1<<8));	// 设置ROUT2右声道音量， 更新左右声道音量
 }
 
-void WM8978_Palyer(uint16_t *data)
+void WM8978_Play(uint16_t *data)
 {
 	uint32_t DataLength = 0;
 	uint8_t* DataAddress = NULL;
@@ -50,3 +45,26 @@ void WM8978_Palyer(uint16_t *data)
 		if(DataLength < BUFFER_SIZE) break;
 	}
 }
+
+
+void WM8978_PlayChar(unsigned char *data)
+{
+    uint32_t DataLength = 0;
+    uint8_t* DataAddress = NULL;
+    uint16_t* TempAddress = NULL;
+
+    // Adjusting DataLength calculation for char
+    DataLength = sizeof(data) - 0x2c; // Assuming sizeof(char) == 1, adjust if not
+    DataAddress = (unsigned char *)(data + 0x2c); // No change needed here
+    TempAddress = (uint16_t*)DataAddress; // Cast to uint16_t* as before
+
+    while(1)
+    {
+        // Transmitting data in chunks of BUFFER_SIZE / 2
+        HAL_I2S_Transmit(&hi2s2, TempAddress, BUFFER_SIZE / 2, 1000);
+        DataLength -= BUFFER_SIZE;
+        TempAddress += (BUFFER_SIZE / 2);
+        if(DataLength < BUFFER_SIZE) break;
+    }
+}
+
