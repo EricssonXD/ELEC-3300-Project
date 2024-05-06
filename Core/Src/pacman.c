@@ -377,25 +377,44 @@ void Pacman_gameloop_multi(){
 
 	// Pacman1 Stats display
 	if(Pacman1->joined){
-	sprintf(scoreDisplay, "P1: %d", Pacman1->score);
-	LCD_DrawString_Color (0, 265, scoreDisplay, BLACK, YELLOW);
-	memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		sprintf(scoreDisplay, "P1: %d", Pacman1->score);
+		LCD_DrawString_Color (0, 265, scoreDisplay, BLACK, YELLOW);
+		memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		if(Pacman1->state == DEATH){
+			LCD_DrawLine(0, 265+6, 0+18, 265+6, RED);
+			LCD_DrawLine(0, 265+10, 150+18, 265+10, RED);
 
+		}
 	}
 	if(Pacman2->joined){
-	sprintf(scoreDisplay, "P2: %d", Pacman2->score);
-	LCD_DrawString_Color (150, 265, scoreDisplay, BLACK, YELLOW);
-	memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		sprintf(scoreDisplay, "P2: %d", Pacman2->score);
+		LCD_DrawString_Color (150, 265, scoreDisplay, BLACK, YELLOW);
+		memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		if(Pacman2->state == DEATH){
+			LCD_DrawLine(150, 265+6, 150+18, 265+6, RED);
+			LCD_DrawLine(150, 265+10, 150+18, 265+10, RED);
+
+		}
 	}
 	if(Pacman3->joined){
-	sprintf(scoreDisplay, "P3: %d", Pacman3->score);
-	LCD_DrawString_Color (0, 295, scoreDisplay, BLACK, YELLOW);
-	memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		sprintf(scoreDisplay, "P3: %d", Pacman3->score);
+		LCD_DrawString_Color (0, 295, scoreDisplay, BLACK, YELLOW);
+		memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		if(Pacman3->state == DEATH){
+			LCD_DrawLine(0, 295+6, 0+18, 295+6, RED);
+			LCD_DrawLine(0, 295+10, 0+18, 295+10, RED);
+
+		}
 	}
 	if(Pacman4->joined){
-	sprintf(scoreDisplay, "P4: %d", Pacman4->score);
-	LCD_DrawString_Color (150, 295, scoreDisplay, BLACK, YELLOW);
-	memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		sprintf(scoreDisplay, "P4: %d", Pacman4->score);
+		LCD_DrawString_Color (150, 295, scoreDisplay, BLACK, YELLOW);
+		memset(scoreDisplay, 0, sizeof(scoreDisplay));
+		if(Pacman4->state == DEATH){
+			LCD_DrawLine(150, 295+6, 150+18, 295+6, RED);
+			LCD_DrawLine(150, 295+10, 150+18, 295+10, RED);
+
+		}
 	}
 }
 
