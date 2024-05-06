@@ -13,7 +13,23 @@
 
 uint16_t stunTimer = 20;
 int isStun = 0;
-void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position ghostPositions[],  uint16_t color) {
+void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position ghostPositions[],  uint16_t color, uint8_t move) {
+	if(!move){
+		for(int i=0; i<numPacman; i++){
+			Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[i]);
+			if(currentPacman->joined){
+				if (ghost->curX == currentPacman->curX && ghost->curY == currentPacman->curY){
+					pacman->health--;
+					pacman->state = DEATH;
+					MULTI_PACMAN_GAMEDATA.mazeData[currentPacman->curY][currentPacman->curX] = ' ';
+					stunTimer = 10;
+					isStun = 1;
+				}
+			}
+		}
+	}
+
+
 	if(isStun == 1){
 		if(stunTimer > 0){
 			stunTimer--;
@@ -23,6 +39,7 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position g
 			isStun = 0;
 		}
 	}
+	if(!move)return;
 
     int curX = ghost->curX;
     int curY = ghost->curY;
@@ -103,6 +120,19 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position g
 
     //Update the ghost variables
     Direction optimalDir = validDirections[index];
+	for(int i=0; i<numPacman; i++){
+		Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[i]);
+		if(currentPacman->joined){
+			if (ghost->pastX == currentPacman->curX && ghost->pastY == currentPacman->curY){
+				pacman->health--;
+				pacman->state = DEATH;
+				MULTI_PACMAN_GAMEDATA.mazeData[currentPacman->curY][currentPacman->curX] = ' ';
+
+				stunTimer = 10;
+				isStun = 1;
+			}
+		}
+	}
     ghost->pastX = ghost->curX;
     ghost->pastY = ghost->curY;
     ghost->direction = optimalDir;
@@ -135,7 +165,10 @@ void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position g
 		if(currentPacman->joined){
 			if (curX == currentPacman->curX && curY == currentPacman->curY){
 				pacman->health--;
-				stunTimer = 20;
+				pacman->state = DEATH;
+				MULTI_PACMAN_GAMEDATA.mazeData[currentPacman->curY][currentPacman->curX] = ' ';
+
+				stunTimer = 10;
 				isStun = 1;
 			}
 		}

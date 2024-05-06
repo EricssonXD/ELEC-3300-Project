@@ -40,7 +40,7 @@ typedef struct {
 } Ghost;
 
 //void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23]);
-
+//void Ghost_update(Ghost* ghost, Pacman* pacman, char (*mazeData)[23], Position ghostPositions[],  uint16_t color, uint8_t move);
 void getRelativeGhostsPos(Ghost ghosts[], Position* ghostPositions, Ghost* currentGhost);
 void getAllGhostsPos(Ghost ghosts[], Position* ghostPositions);
 void ghostReset(Ghost* ghost, uint16_t color);
