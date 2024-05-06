@@ -386,6 +386,7 @@ void Pacman_gameloop_multi(){
 	memset(scoreDisplay, 0, sizeof(scoreDisplay));
 	}
 }
+}
 
 void Pacman_gamestart(const void * maze, int isMulti){
 	// Make sure the gameloop timer is stopped
@@ -421,6 +422,9 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
 	uint16_t curX = pacman->curX;
 	uint16_t curY = pacman->curY;
 
+//	mazeData[pacman->pastY ][pacman->pastX] = ' ';
+	mazeData[curY][curX] = ' ';
+
 	pacman->pastX = pacman->curX;
 	pacman->pastY = pacman->curY;
 
@@ -433,7 +437,7 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
         		pacman->curX = mazeTunnelRightX;
         		pacman->curY = mazeTunnelRightY;
         	}
-        	else if(mazeChar != '#'){
+        	else if(mazeChar != '#' && mazeChar != 'P'){
         		pacman->curX--;
         		pacman->direction = LEFT;
         	}
@@ -447,7 +451,7 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
 				pacman->curX = mazeTunnelLeftX;
 				pacman->curY = mazeTunnelLeftY;
 			}
-            else if(mazeChar != '#' ){
+            else if(mazeChar != '#' && mazeChar != 'P'){
             	pacman->curX++;
             	pacman->direction = RIGHT;
 			}
@@ -457,7 +461,7 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
             break;
         case UP:
         	mazeChar = mazeData[curY - 1][curX];
-        	if(mazeChar != '#' ){
+        	if(mazeChar != '#' && mazeChar != 'P'){
         		pacman->curY--;
 				pacman->direction = UP;
 			}
@@ -467,7 +471,7 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
             break;
         case DOWN:
         	mazeChar = mazeData[curY + 1][curX];
-			if(mazeChar != '#' ){
+			if(mazeChar != '#' && mazeChar != 'P'){
 				pacman->curY++;
 				pacman->direction = DOWN;
 			}
@@ -480,6 +484,8 @@ uint8_t Pacman_update(Pacman* pacman, char (*mazeData)[23], Direction direction,
         	break;
 
     }
+    	mazeData[pacman->curY ][pacman->curX] = 'P';
+
 
     mazeChar = mazeData[pacman->curY][pacman->curX];
     if(mazeChar == '*'){
