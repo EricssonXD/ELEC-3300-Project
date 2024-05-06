@@ -197,7 +197,7 @@ int main(void)
 			  Pacman_gamestart(MAZE1, isMulti);
 		  }
 		  else{
-			  Pacman_gamestart(MAZE2, isMulti);
+			  Pacman_gamestart(MAZE4, isMulti);
 		  }
 
 		  displayReady = 1;

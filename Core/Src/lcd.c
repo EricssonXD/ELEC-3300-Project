@@ -783,11 +783,14 @@ void initMultiMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacma
     uint16_t buffSize = 6;
     uint16_t wallColor = BLUE;
     uint16_t ghostColors[numGhost] = {RED, MAGENTA, CYAN, GREEN};
+    int numPacmanMaze = 0;
+
     for(int i=0; i<numPacman; i++){
     	Pacman* currentPacman = &((*pacmans)[i]);
     	currentPacman->score = 0;
     	currentPacman->state = NORMAL;
     }
+
     int ghostIndex = 0; // Variable to keep track of the current ghost being initialized
     int pacmanIndex = 0;
 
@@ -800,12 +803,14 @@ void initMultiMaze(uint16_t startX, uint16_t startY, char (*mazeData)[23], Pacma
             else if (mazeChar == 'P') { // Pacman
             	if (pacmanIndex < numPacman) {
 					Pacman* currentPacman = &((*pacmans)[pacmanIndex]);
+            		if(currentPacman->joined){
 					currentPacman->health = 1;
 					currentPacman->curX = x;
 					currentPacman->curY = y;
 					currentPacman->direction = LEFT;
 					LCD_DrawPacman(currentPacman, startX + x * gamePixelSize, startY + y * gamePixelSize, 9, YELLOW);
 					currentPacman->direction = STOP;
+            		}
 
 					pacmanIndex++;
 				}
