@@ -304,6 +304,9 @@ void Pacman_gameloop_multi(){
 	else if(numPacmanLeft == 2){
 		Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
 		Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
+	if(ghostUpdate){
+		ghostUpdate = 0;
+		Position ghostRelativePositions[numGhost-1];
 		for(int i=0; i<numGhost; i++){
 			Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
 			getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
