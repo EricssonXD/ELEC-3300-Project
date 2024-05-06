@@ -270,18 +270,6 @@ void Pacman_gameloop_multi(){
 		}
 	}
 
-//	Position ghostRelativePositions[numGhost-1];
-//	for(int i=0; i<numGhost; i++){
-//		Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
-//		getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
-//		if(i<2){
-//			Ghost_update(currentGhost, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
-//		}
-//		else{
-//			Ghost_update(currentGhost, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
-//		}
-//	}
-
 	int numPacmanLeft = 0;
 	int pacmanLeftIndex[numPacman];
 	for(int i=0; i<numPacman; i++){
@@ -292,71 +280,74 @@ void Pacman_gameloop_multi(){
 		}
 	}
 
-	Position ghostRelativePositions[numGhost-1];
-	if(numPacmanLeft == 1){
-		Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
-		for(int i=0; i<numGhost; i++){
-			Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
-			getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
-			Ghost_update(currentGhost, currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
-		}
-	}
-	else if(numPacmanLeft == 2){
-		Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
-		Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
 	if(ghostUpdate){
 		ghostUpdate = 0;
 		Position ghostRelativePositions[numGhost-1];
-		for(int i=0; i<numGhost; i++){
-			Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
-			getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
-			if(i<2){
-				Ghost_update(currentGhost, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+		if(numPacmanLeft == 1){
+			Pacman* currentPacman = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
+			for(int i=0; i<numGhost; i++){
+				Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
+				getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
+				Ghost_update(currentGhost, currentPacman, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
 			}
-			else{
-				Ghost_update(currentGhost, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+		}
+		else if(numPacmanLeft == 2){
+			Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
+			Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
+			for(int i=0; i<numGhost; i++){
+				Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
+				getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
+				if(i<2){
+					Ghost_update(currentGhost, currentPacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+				}
+				else{
+					Ghost_update(currentGhost, currentPacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+				}
+			}
+		}
+		else if(numPacmanLeft == 3){
+			Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
+			Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
+			Pacman* currentPacman3 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[2]]);
+			for(int i=0; i<numGhost; i++){
+				Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
+				getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
+				if(i==1){
+					Ghost_update(currentGhost, currentPacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+				}
+				else if(i==2){
+					Ghost_update(currentGhost, currentPacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+				}
+				else{
+					Ghost_update(currentGhost, currentPacman3, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+				}
+			}
+		}
+		else if(numPacmanLeft == 4){
+			Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
+			Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
+			Pacman* currentPacman3 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[2]]);
+			Pacman* currentPacman4 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[2]]);
+			for(int i=0; i<numGhost; i++){
+				Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
+				getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
+				if(i==1){
+					Ghost_update(currentGhost, currentPacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+				}
+				else if(i==2){
+					Ghost_update(currentGhost, currentPacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+				}
+				else if(i==3){
+					Ghost_update(currentGhost, currentPacman3, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+				}
+				else{
+					Ghost_update(currentGhost, currentPacman4, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
+				}
 			}
 		}
 	}
-	else if(numPacmanLeft == 3){
-		Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
-		Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
-		Pacman* currentPacman3 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[2]]);
-		for(int i=0; i<numGhost; i++){
-			Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
-			getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
-			if(i==1){
-				Ghost_update(currentPacman1, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
-			}
-			else if(i==2){
-				Ghost_update(currentPacman2, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
-			}
-			else{
-				Ghost_update(currentPacman3, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
-			}
-		}
-	}
-	else if(numPacmanLeft == 4){
-		Pacman* currentPacman1 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[0]]);
-		Pacman* currentPacman2 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[1]]);
-		Pacman* currentPacman3 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[2]]);
-		Pacman* currentPacman4 = &(MULTI_PACMAN_GAMEDATA.pacmans[pacmanLeftIndex[2]]);
-		for(int i=0; i<numGhost; i++){
-			Ghost* currentGhost = &(MULTI_PACMAN_GAMEDATA.ghosts[i]);
-			getRelativeGhostsPos(MULTI_PACMAN_GAMEDATA.ghosts, ghostRelativePositions, currentGhost);
-			if(i==1){
-				Ghost_update(currentPacman1, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
-			}
-			else if(i==2){
-				Ghost_update(currentPacman2, Pacman1, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
-			}
-			else if(i==3){
-				Ghost_update(currentPacman3, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
-			}
-			else{
-				Ghost_update(currentPacman4, Pacman2, MULTI_PACMAN_GAMEDATA.mazeData, ghostRelativePositions, ghostColors[i]);
-			}
-		}
+	else{
+		ghostUpdate = 1;
 	}
 
 	char healthDisplay[20];
@@ -384,7 +375,6 @@ void Pacman_gameloop_multi(){
 	LCD_DrawString_Color (150, 295, scoreDisplay, BLACK, YELLOW);
 	memset(scoreDisplay, 0, sizeof(scoreDisplay));
 	}
-}
 }
 
 void Pacman_gamestart(const void * maze, int isMulti){
